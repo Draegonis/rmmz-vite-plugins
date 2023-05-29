@@ -1,0 +1,42 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Rmmz Files
+/audio
+/css
+/effects
+/fonts
+/icon
+/img
+/movies
+game.rmmzproject
+
+/data/*
+!/data/*DdmDraegonis*.json
+
+/js/*
+!/js/plugins
+/js/plugins/*
+!/js/plugins/*DdmDraegonis*.js
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

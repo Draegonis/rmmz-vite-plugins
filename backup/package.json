@@ -1,0 +1,31 @@
+{
+  "name": "draegonis-rmmz-vite-plugins",
+  "private": true,
+  "version": "0.0.1",
+  "homepage": "./",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "license": "generate-license-file --input package.json --output third-party-licenses.txt --overwrite"
+  },
+  "devDependencies": {
+    "@types/pako": "^2.0.0",
+    "@types/ramda": "^0.29.1",
+    "@types/uuid": "^9.0.1",
+    "generate-license-file": "^2.0.0",
+    "typescript": "^5.0.2",
+    "vite": "^4.3.2"
+  },
+  "dependencies": {
+    "idb-keyval": "^6.2.1",
+    "immer": "^10.0.2",
+    "pako": "^2.1.0",
+    "ramda": "^0.29.0",
+    "react": "^18.2.0",
+    "uuid": "^9.0.0",
+    "zod": "^3.21.4",
+    "zustand": "^4.3.8"
+  }
+}
