@@ -10,31 +10,27 @@ import { v4 as uuidV4 } from "uuid";
 // Types
 import type {
   DdmCalender,
-  DdmNodeTypes,
-  DdmNodeIndex,
+  DdmNodeEvent,
   DdmNodeMapEvent,
-  DdmNodeVariable,
-  DdmNodeCustom,
-  DdmNodeSwitch,
+  DdmNodeVarEvent,
+  DdmNodeCustomEvent,
+  DdmNodeSwitchEvent,
+  DdmNodeWorkerReturn,
+  DdmNodeEventTracked,
 } from "../types/ddmTypes";
 import type { DdmGameState } from "../enums/state";
 
-export type DdmWorkerData = {
-  eventData: Map<DdmNodeTypes["id"], Omit<DdmNodeTypes, "id">>;
-  index: DdmNodeIndex;
-};
-
-const isNodeMapEvent = (data: DdmNodeTypes): data is DdmNodeMapEvent => {
+const isNodeMapEvent = (data: DdmNodeEvent): data is DdmNodeMapEvent => {
   return (data as DdmNodeMapEvent).type === "mapEvent";
 };
-const isNodeSwitch = (data: DdmNodeTypes): data is DdmNodeSwitch => {
-  return (data as DdmNodeSwitch).type === "switch";
+const isNodeSwitch = (data: DdmNodeEvent): data is DdmNodeSwitchEvent => {
+  return (data as DdmNodeSwitchEvent).type === "switch";
 };
-const isNodeVariable = (data: DdmNodeTypes): data is DdmNodeVariable => {
-  return (data as DdmNodeVariable).type === "variable";
+const isNodeVariable = (data: DdmNodeEvent): data is DdmNodeVarEvent => {
+  return (data as DdmNodeVarEvent).type === "variable";
 };
-const isNodeCustom = (data: DdmNodeTypes): data is DdmNodeCustom => {
-  return (data as DdmNodeCustom).type === "custom";
+const isNodeCustom = (data: DdmNodeEvent): data is DdmNodeCustomEvent => {
+  return (data as DdmNodeCustomEvent).type === "custom";
 };
 
 // ===================================================
@@ -56,16 +52,16 @@ class DdmNodeManager {
     return this.#tick;
   }
 
-  #tickEvents: DdmNodeTypes[] = [];
+  #tickEvents: DdmNodeEvent[] = [];
   get _tickEvents() {
     return this.#tickEvents;
   }
-  #trackedEvents: Record<string, number> = {};
+  #trackedEvents: DdmNodeEventTracked = {};
   get _trackedEvents() {
     return this.#trackedEvents;
   }
 
-  #eventCache: DdmNodeTypes[] = [];
+  #eventCache: DdmNodeEvent[] = [];
 
   // #calender: DdmCalender;
   // #currentDay = 1;
@@ -165,8 +161,8 @@ class DdmNodeManager {
     const str = await get(saveFileName);
     const restored = inflate(str, { to: "string" });
     const storedData = JSON.parse(restored) as {
-      events: DdmNodeTypes[];
-      tracked: Record<string, number>;
+      events: DdmNodeEvent[];
+      tracked: DdmNodeEventTracked;
     };
 
     const gameTick = storedData.events.pop();
@@ -182,9 +178,9 @@ class DdmNodeManager {
   /**
    * The method to add an event to the tick que.
    * @param {number} toTick - the tick to schedule the event for.
-   * @param {DdmNodeTypes} eventObj - the event object with id, type and function to call.
+   * @param {DdmNodeEvent} eventObj - the event object with id, type and function to call.
    */
-  scheduleEvent(eventObj: DdmNodeTypes) {
+  scheduleEvent(eventObj: DdmNodeEvent) {
     if (this.#workInProgress) {
       this.#eventCache.push(eventObj);
       return;
@@ -209,12 +205,8 @@ class DdmNodeManager {
   #initWorker() {
     this.#worker = new DdmNodeWorker();
 
-    this.#worker.onmessage = async (event) => {
-      const { eventsToFire, newEvents, newTracked } = event.data as {
-        eventsToFire: DdmNodeTypes[] | undefined;
-        newEvents: DdmNodeTypes[];
-        newTracked: Record<string, number>;
-      };
+    this.#worker.onmessage = async ({ data }: DdmNodeWorkerReturn) => {
+      const { eventsToFire, newEvents, newTracked } = data;
 
       console.log(newEvents, newTracked);
 
@@ -252,8 +244,8 @@ class DdmNodeManager {
    *
    */
   async #setEventData(
-    newEvents: DdmNodeTypes[],
-    newTracked: Record<string, number>
+    newEvents: DdmNodeEvent[],
+    newTracked: DdmNodeEventTracked
   ) {
     if (!isEmpty(newTracked)) {
       Object.assign(this.#trackedEvents, newTracked);
@@ -265,7 +257,7 @@ class DdmNodeManager {
   /**
    * A method that schedules the cached events when the worker is finished.
    */
-  async #onWorkFinished(eventsToFire: DdmNodeTypes[]) {
+  async #onWorkFinished(eventsToFire: DdmNodeEvent[]) {
     console.log("Your fired: ", eventsToFire);
     for (const toExecute of eventsToFire) {
       this.#executeEvent(toExecute);
@@ -288,7 +280,7 @@ class DdmNodeManager {
   /**
    *
    */
-  async #executeEvent(toExecute: DdmNodeTypes) {
+  async #executeEvent(toExecute: DdmNodeEvent) {
     if (isNodeMapEvent(toExecute)) {
       const { eventId, eventMap } = toExecute;
       console.log(eventId, eventMap);
