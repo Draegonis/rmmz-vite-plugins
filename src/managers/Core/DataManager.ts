@@ -1,6 +1,11 @@
-import { NodeTypeGuard } from "../../enums/keys";
+import { DataStorageKeys, NodeTypeGuard, PluginKeys } from "../../enums/keys";
 import { calenderSchema } from "../../data/zod/NodeIndex";
+// Storage
+import { TITLE } from "../../game";
+import { set, get } from "idb-keyval";
+import { inflate, deflate } from "pako";
 // Helpers
+import { isEmpty } from "ramda";
 import { parseStructSchema } from "../../data/zod/zodHelpers";
 import {
   stringIsInEnum,
@@ -12,7 +17,10 @@ import type { DdmNodeGuardType } from "../../enums/keys";
 import type {
   DdmCalender,
   DdmNodeEvent,
+  DdmNodeSaveData,
   DdmParserFuncs,
+  DdmPersistSaveData,
+  DdmSaveData,
 } from "../../types/ddmTypes";
 
 // ===================================================
@@ -85,6 +93,8 @@ const parseNodeEvent = (
  * with some special cases.
  */
 class CoreDataManager {
+  // ===================================================
+  //                Data Convertion
   /**
    * @description Exposes the convertToNumber to the global api.
    * @param {string} value The string value to convert to a number.
@@ -131,6 +141,53 @@ class CoreDataManager {
     if (data) {
       DdmApi.NM.scheduleEvent(data as DdmNodeEvent);
     }
+  }
+  // ===================================================
+  //                 Data Storage
+
+  async onSave(saveID: number | string) {
+    const saveName = `${TITLE}-File-${saveID}`;
+    const saveData: { [key: string]: any } = {};
+
+    PluginKeys.forEach((plugin) => {
+      if (DdmApi[plugin] && "onSave" in DdmApi[plugin]) {
+        Object.entries(DdmApi[plugin].onSave()).forEach(([key, obj]) => {
+          saveData[key] = obj;
+        });
+      }
+    });
+
+    const jsonData = JSON.stringify(saveData);
+    const compressData = deflate(jsonData);
+    await set(saveName, compressData);
+  }
+
+  async onLoad(saveID: number | string) {
+    const saveName = `${TITLE}-File-${saveID}`;
+    const str = await get(saveName);
+    const restored = inflate(str, { to: "string" });
+    const saveData = JSON.parse(restored) as DdmSaveData;
+
+    PluginKeys.forEach((plugin) => {
+      if (DdmApi[plugin] && "onLoad" in DdmApi[plugin]) {
+        const pluginData: { [key: string]: any } = {};
+
+        DataStorageKeys[plugin]?.forEach((key) => {
+          pluginData[key] = saveData[key];
+        });
+
+        if (!isEmpty(pluginData)) {
+          switch (plugin) {
+            case "NM":
+              DdmApi[plugin].onLoad(pluginData as DdmNodeSaveData);
+              break;
+            case "PM":
+              DdmApi[plugin].onLoad(pluginData as DdmPersistSaveData);
+              break;
+          }
+        }
+      }
+    });
   }
 }
 

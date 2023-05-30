@@ -53,26 +53,6 @@
  * @text Pause Auto Tick
  * @desc Pauses the automatic tick start/stop when switching scenes.
  *
- * @command saveEvents
- * @text Forced Save
- * @desc Force a save of node event data to the given save ID.
- *
- * @arg id
- * @text Save ID
- * @type string
- * @default "default"
- * @desc The ID that the node event data is going to be saved to.
- *
- * @command loadEvents
- * @text Forced Load
- * @desc Force a load of data with save ID.
- *
- * @arg id
- * @text Save ID
- * @type string
- * @default "default"
- * @desc The ID that the node event data was saved to.
- *
  * @command clearEvents
  * @text Force Clear Events
  * @desc Force a clear of all current scheduled events.
@@ -137,12 +117,6 @@ PluginManager.registerCommand("DdmDraegonisNode", "resumeAuto", () => {
 PluginManager.registerCommand("DdmDraegonisNode", "pauseAuto", () => {
   DdmApi.NM.pauseAutoTick();
 });
-PluginManager.registerCommand("DdmDraegonisNode", "saveEvents", ({ id }) => {
-  DdmApi.NM.onSave(id);
-});
-PluginManager.registerCommand("DdmDraegonisNode", "loadEvents", ({ id }) => {
-  DdmApi.NM.onLoad(id);
-});
 PluginManager.registerCommand("DdmDraegonisNode", "clearEvents", () => {
   DdmApi.NM.clearEvents();
 });
@@ -153,37 +127,10 @@ PluginManager.registerCommand("DdmDraegonisNode", "clearEvents", () => {
 
   const DdmNM_Local = {
     Alias: {
-      Scene_Save: {
-        onSaveSuccess: Scene_Save.prototype.onSaveSuccess,
-      },
-      Scene_Base: {
-        onAutosaveSuccess: Scene_Base.prototype.onAutosaveSuccess,
-      },
-      Scene_Load: {
-        onLoadSuccess: Scene_Load.prototype.onLoadSuccess,
-      },
-      DataManager: {
-        saveGame: DataManager.saveGame,
-        loadGame: DataManager.loadGame,
-      },
       Scene_Title: {
         create: Scene_Title.prototype.create,
       },
     },
-  };
-
-  // Make custom save in indexeddb.
-  Scene_Save.prototype.onSaveSuccess = function () {
-    DdmNM_Local.Alias.Scene_Save.onSaveSuccess.call(this);
-    DdmApi.NM.onSave(this.savefileId());
-  };
-  Scene_Base.prototype.onAutosaveSuccess = function () {
-    DdmNM_Local.Alias.Scene_Base.onAutosaveSuccess.call(this);
-    DdmApi.NM.onSave(0);
-  };
-  Scene_Load.prototype.onLoadSuccess = function () {
-    DdmApi.NM.onLoad(this.savefileId());
-    DdmNM_Local.Alias.Scene_Load.onLoadSuccess.call(this);
   };
   // Clear events when you go to the title screen.
   Scene_Title.prototype.create = function () {

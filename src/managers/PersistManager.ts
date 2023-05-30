@@ -17,7 +17,11 @@ import { v4 as uuidV4 } from "uuid";
 // Types
 import type { Draft } from "immer";
 import type { DdmPersistIndexSchema } from "../data/zod/PersistIndex";
-import type { DdmPersistState, DdmAllPersistStore } from "../types/ddmTypes";
+import type {
+  DdmPersistState,
+  DdmAllPersistStore,
+  DdmPersistSaveData,
+} from "../types/ddmTypes";
 
 enableMapSet(); // So immer can use map and sets in zustand store.
 
@@ -314,14 +318,14 @@ class PersistManager {
     this.#setCustom(custom);
   }
 
-  onLoad(storeId: string) {
-    const { custom, stash } = this.#fetchStore(storeId);
+  onLoad({ persistUUID }: DdmPersistSaveData) {
+    const { custom, stash } = this.#fetchStore(persistUUID);
     this.#setCustom(custom);
     this.#setStash(stash);
   }
 
-  onSave() {
-    return this.#updateStore();
+  onSave(): DdmPersistSaveData {
+    return { persistUUID: this.#updateStore() };
   }
 
   saveSingle(updateKey: DdmStoredPersistKeys) {

@@ -1,8 +1,4 @@
-import { TITLE } from "../game";
 import DdmNodeWorker from "../workers/node?worker";
-// Store
-import { set, get } from "idb-keyval";
-import { inflate, deflate } from "pako";
 // Helpers
 import { isEmpty } from "ramda";
 import { setGameVariables } from "../helpers/gameFuncs";
@@ -17,6 +13,7 @@ import type {
   DdmNodeSwitchEvent,
   DdmNodeWorkerReturn,
   DdmNodeEventTracked,
+  DdmNodeSaveData,
 } from "../types/ddmTypes";
 import type { DdmGameState } from "../enums/state";
 
@@ -136,36 +133,27 @@ class DdmNodeManager {
     else this.stop();
   }
   /**
-   * The method called to save the data to the save file.
+   * The method called to setup the save data for the save file.
    */
-  async onSave(saveName: string) {
-    const saveFileName = `${TITLE} File-${saveName}`;
-
-    const saveData = {
-      events: this.#tickEvents,
-      tracked: this.#trackedEvents,
+  onSave() {
+    const saveData: DdmNodeSaveData = {
+      nodeEvents: this.#tickEvents,
+      nodeTracked: this.#trackedEvents,
     };
-
-    saveData.events.push({ id: "storeTick", type: "custom", tick: this.#tick });
-
-    const str = JSON.stringify(saveData);
-    const compressed = deflate(str);
-    await set(saveFileName, compressed);
+    saveData.nodeEvents.push({
+      id: "storeTick",
+      type: "custom",
+      tick: this.#tick,
+    });
+    return saveData;
   }
-  // /**
-  //  * The method called to load data from the save file.
-  //  */
-  async onLoad(saveName: string) {
-    const saveFileName = `${TITLE} File-${saveName}`;
+  /**
+   * The method called to load data from the save file.
+   */
+  onLoad(saveData: DdmNodeSaveData) {
+    const { nodeEvents, nodeTracked } = saveData;
 
-    const str = await get(saveFileName);
-    const restored = inflate(str, { to: "string" });
-    const storedData = JSON.parse(restored) as {
-      events: DdmNodeEvent[];
-      tracked: DdmNodeEventTracked;
-    };
-
-    const gameTick = storedData.events.pop();
+    const gameTick = nodeEvents.pop();
     if (gameTick) {
       const { tick } = gameTick;
       this.#tick = tick;
@@ -173,7 +161,7 @@ class DdmNodeManager {
       this.#tick = 0;
     }
 
-    await this.#setEventData(storedData.events, storedData.tracked);
+    this.#setEventData(nodeEvents, nodeTracked);
   }
   /**
    * The method to add an event to the tick que.
@@ -243,10 +231,7 @@ class DdmNodeManager {
   /**
    *
    */
-  async #setEventData(
-    newEvents: DdmNodeEvent[],
-    newTracked: DdmNodeEventTracked
-  ) {
+  #setEventData(newEvents: DdmNodeEvent[], newTracked: DdmNodeEventTracked) {
     if (!isEmpty(newTracked)) {
       Object.assign(this.#trackedEvents, newTracked);
     }

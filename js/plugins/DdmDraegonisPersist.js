@@ -47,25 +47,10 @@ DdmApi.init.PM({
 
   const DdmPM_Local = {
     Alias: {
-      DataManager: {
-        makeSaveContents: DataManager.makeSaveContents,
-        extractSaveContents: DataManager.extractSaveContents,
-      },
       Scene_Boot: {
         start: Scene_Boot.prototype.start,
       },
     },
-  };
-
-  // Add to the Game Save.
-  DataManager.makeSaveContents = function () {
-    const contents = DdmPM_Local.Alias.DataManager.makeSaveContents.call(this);
-    contents.DDMPM_id = DdmApi.PM.onSave();
-    return contents;
-  };
-  DataManager.extractSaveContents = function (contents) {
-    DdmPM_Local.Alias.DataManager.extractSaveContents.call(this, contents);
-    DdmApi.PM.onLoad(contents.DDMPM_id);
   };
   // Load persisted data on boot, this is mostly to get access to DdmApi.PM.custom
   // for the title screen.

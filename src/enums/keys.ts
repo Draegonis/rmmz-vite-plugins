@@ -36,3 +36,20 @@ export const NodeTypeGuard = [
   "custom",
 ] as const;
 export type DdmNodeGuardType = LitteralUnion<(typeof NodeTypeGuard)[number]>;
+
+const NodeStorageKeys = ["nodeEvents", "nodeTracked"] as const;
+type DdmNodeStorageKeys = LitteralUnion<(typeof NodeStorageKeys)[number]>;
+
+const PersistStorageKeys = ["persistUUID"] as const;
+type DdmPersistStorageKeys = LitteralUnion<(typeof PersistStorageKeys)[number]>;
+
+export const DataStorageKeys = {
+  NM: NodeStorageKeys,
+  PM: PersistStorageKeys,
+};
+export type DdmDataStorageKeys = {
+  NM: DdmNodeStorageKeys;
+  PM: DdmPersistStorageKeys;
+} & {
+  [key: string]: readonly string[];
+};
