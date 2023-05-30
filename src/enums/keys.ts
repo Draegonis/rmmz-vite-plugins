@@ -1,7 +1,7 @@
 import type { LitteralUnion } from "../types/ddmTypes";
 
 // ===================================================
-//                   PARAM KEYS
+//                     PARAM
 
 export const PluginKeys = ["PM", "NM"] as const;
 export type DdmPluginKeys = LitteralUnion<(typeof PluginKeys)[number]>;
@@ -10,13 +10,13 @@ export const CalenderKeys = ["months", "weeksInMonth", "days"] as const;
 export type DdmCalenderKeys = LitteralUnion<(typeof CalenderKeys)[number]>;
 
 // ===================================================
-//                   API KEYS
+//                      API
 
 export const ApiKeys = [...PluginKeys, "Core"] as const;
 export type DdmApiKeys = LitteralUnion<(typeof ApiKeys)[number]>;
 
 // ===================================================
-//                    STORAGE KEYS
+//                    STORAGE
 
 export const StoredKeys = [
   "custom",
