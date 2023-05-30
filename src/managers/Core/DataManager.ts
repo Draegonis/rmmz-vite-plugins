@@ -9,12 +9,16 @@ import {
 } from "../../helpers/common";
 // Types
 import type { DdmNodeGuardType } from "../../enums/keys";
-import type { DdmCalender, DdmNodeEvent } from "../../types/ddmTypes";
+import type {
+  DdmCalender,
+  DdmNodeEvent,
+  DdmParserFuncs,
+} from "../../types/ddmTypes";
 
 // ===================================================
 //                  HELPERS
 
-const CalenderParsers: Record<string, (target: string) => unknown> = {
+const CalenderParsers: DdmParserFuncs = {
   days: JSON.parse,
   months: JSON.parse,
   weeksInMonth: convertToNumber,
@@ -34,8 +38,7 @@ const parseCalender = (target: string): DdmCalender | undefined => {
     totalDays: newCalender.days.length - 1,
   };
 };
-
-const NodeEventParsers: Record<string, (target: string) => unknown> = {
+const NodeEventParsers: DdmParserFuncs = {
   tick: convertToNumber,
   isTrackable: convertToBoolean,
   eventId: convertToNumber,
@@ -50,7 +53,10 @@ const parseNodeEvent = (
   type: DdmNodeGuardType
 ): DdmNodeEvent | undefined => {
   if (stringIsInEnum(type, NodeTypeGuard)) {
-    return parseStructSchema(target, NodeEventParsers) as DdmNodeEvent;
+    return parseStructSchema(
+      target,
+      NodeEventParsers
+    ) as unknown as DdmNodeEvent;
   }
   return undefined;
 };
