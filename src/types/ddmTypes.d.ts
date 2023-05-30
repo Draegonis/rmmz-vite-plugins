@@ -5,6 +5,7 @@ import type {
   DdmNodeGuardType,
 } from "../enums/keys";
 import type { DdmCalenderParam } from "../data/zod/NodeIndex";
+import type { DdmTintState } from "../enums/state";
 
 // ===================================================
 //                  CORE
@@ -95,6 +96,15 @@ export interface DdmCalender extends DdmCalenderParam {
   totalMonths: number;
   totalDays: number;
 }
+
+// Tint Colours
+
+export type DdmTintColours = DdmEnforceKeysOfSameType<
+  DdmTintState,
+  [number, number, number, number]
+> & {
+  custom: { [key: string]: [number, number, number, number] };
+};
 
 // ===================================================
 //                  INIT API
