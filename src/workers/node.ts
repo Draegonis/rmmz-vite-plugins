@@ -12,11 +12,6 @@ export {};
  */
 onmessage = ({ data }: DdmNodeWorkerMessage) => {
   const eventTracked: DdmNodeEventTracked = {};
-
-  const setTracked = (eventId: string, tick: number) => {
-    eventTracked[eventId] = tick;
-  };
-
   const eventsToFire: DdmNodeEvent[] = [];
 
   const newData = data.filter((eventData) => {
@@ -24,7 +19,7 @@ onmessage = ({ data }: DdmNodeWorkerMessage) => {
     const newTick = tick - 1;
 
     if (isTrackable) {
-      setTracked(eventData.id, newTick);
+      eventTracked[eventData.id] = newTick;
     }
     if (newTick === 0) {
       eventsToFire.push(eventData);
