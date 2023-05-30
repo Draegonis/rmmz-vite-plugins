@@ -97,8 +97,13 @@ export type DdmNodeEvent =
   | DdmNodeVarEvent
   | DdmNodeCustomEvent;
 
-// Calender
+// ===================================================
+//                    DATA
 
+// Helper
+export type DdmParserFuncs = Record<string, (target: string) => unknown>;
+
+// Calender
 export interface DdmCalender extends DdmCalenderParam {
   year: number;
   totalMonths: number;
@@ -106,7 +111,6 @@ export interface DdmCalender extends DdmCalenderParam {
 }
 
 // Tint Colours
-
 export type DdmTintColours = DdmEnforceKeysOfSameType<
   DdmTintState,
   [number, number, number, number]
