@@ -13,3 +13,6 @@ export const GameState = [
   "custom",
 ] as const;
 export type DdmGameState = LitteralUnion<(typeof GameState)[number]>;
+
+export const WeatherState = ["none", "rain", "storm", "snow"] as const;
+export type DdmWeatherState = LitteralUnion<(typeof WeatherState)[number]>;
