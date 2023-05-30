@@ -1,5 +1,6 @@
 import { string as zString } from "zod";
 import type { ZodSchema } from "zod";
+import type { DdmParserFuncs } from "../../types/ddmTypes";
 
 export const fetchJsonSchema = async <T>(path: string, schema: ZodSchema) => {
   const fetchJson = async () => {
@@ -24,11 +25,13 @@ export const fetchJsonSchema = async <T>(path: string, schema: ZodSchema) => {
 
 export const parseStructSchema = (
   target: string,
-  parserFuncs: Record<string, (target: string) => any>,
+  parserFuncs: DdmParserFuncs,
   isArray?: boolean
-) => {
-  return zString()
+): { [key: string]: unknown } | { [key: string]: unknown }[] => {
+  return (
+    zString()
     .transform((value) => JSON.parse(value))
+      // Note: Add error handling.
     .transform((value) => {
       const parser = (targetValue: string) =>
         Object.fromEntries(
@@ -49,5 +52,6 @@ export const parseStructSchema = (
 
       return parser(value);
     })
-    .parse(target);
+      .parse(target)
+  );
 };
