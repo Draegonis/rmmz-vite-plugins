@@ -18,14 +18,16 @@ export type DdmApiKeys = LitteralUnion<(typeof ApiKeys)[number]>;
 // ===================================================
 //                    STORAGE
 
-export const StoredKeys = [
+export const PersistStoredKeys = [
   "custom",
   "stash",
   "switch",
   "var",
   "switch&var",
 ] as const;
-export type DdmStoredKeys = LitteralUnion<(typeof StoredKeys)[number]>;
+export type DdmStoredPersistKeys = LitteralUnion<
+  (typeof PersistStoredKeys)[number]
+>;
 
 export const NodeTypeGuard = [
   "mapEvent",

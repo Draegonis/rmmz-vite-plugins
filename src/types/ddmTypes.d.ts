@@ -1,6 +1,6 @@
 import type {
   DdmApiKeys,
-  DdmStoredKeys,
+  DdmStoredPersistKeys,
   DdmPluginKeys,
   DdmNodeGuardType,
 } from "../enums/keys";
@@ -39,7 +39,7 @@ export type DdmPersistActions = {
   };
   fetchCustomOnly: () => Map<string, any>;
   updateStore: () => string;
-  updateSingle: (key: DdmStoredKeys) => void;
+  updateSingle: (key: DdmStoredPersistKeys) => void;
 };
 
 export type DdmAllPersistStore = DdmPersistState &

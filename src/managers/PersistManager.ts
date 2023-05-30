@@ -9,7 +9,7 @@ import { inflate, deflate } from "pako";
 import { fetchJsonSchema } from "../data/zod/zodHelpers";
 import { setGameVariables, getGameVariables } from "../helpers/gameFuncs";
 // Enums
-import { DdmStoredKeys, StoredKeys } from "../enums/keys";
+import { DdmStoredPersistKeys, PersistStoredKeys } from "../enums/keys";
 // Data
 import { persistJsonPath } from "../data/filepaths";
 import { persistIndexSchema } from "../data/zod/PersistIndex";
@@ -43,11 +43,11 @@ const initPersist: DdmPersistState = {
 
 /**
  * A function that updates specific parts of state.stored in the database.
- * @param {DdmStoredKeys} key - the key in state.stored to update.
+ * @param {DdmStoredPersistKeys} key - the key in state.stored to update.
  * @param {Draft<DdmAllPersistStore["stored"]>} stored - the WritableDraft of state.stored.
  */
 const storeSingle = (
-  key: DdmStoredKeys,
+  key: DdmStoredPersistKeys,
   stored: Draft<DdmAllPersistStore["stored"]>
 ) => {
   const setSwitches = () => {
@@ -215,7 +215,7 @@ const persistStore = create<DdmAllPersistStore>()(
           return newId;
         },
         updateSingle(keyToUpdate) {
-          if (DdmApi.Core.Data.stringIsInEnum(keyToUpdate, StoredKeys)) {
+          if (DdmApi.Core.Data.stringIsInEnum(keyToUpdate, PersistStoredKeys)) {
             set((state) => {
               const stored = state.stored;
               setNewId(state);
@@ -324,8 +324,8 @@ class PersistManager {
     return this.#updateStore();
   }
 
-  saveSingle(updateKey: DdmStoredKeys) {
-    if (DdmApi.Core.Data.stringIsInEnum(updateKey, StoredKeys)) {
+  saveSingle(updateKey: DdmStoredPersistKeys) {
+    if (DdmApi.Core.Data.stringIsInEnum(updateKey, PersistStoredKeys)) {
       this.#updateSingle(updateKey);
     }
   }
