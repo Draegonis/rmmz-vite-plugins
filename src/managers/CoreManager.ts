@@ -1,12 +1,19 @@
 // Managers
 import { DdmDataManager } from "./Core/DataManager";
-// State
-import { isWinFocus } from "../game";
+import { DdmStateManager } from "./Core/StateManager";
 // Enums
-import { GameState } from "../enums/state";
+import {
+  DdmPluginKeys,
+  GameStateSubKeys,
+  WeatherStateSubKeys,
+  WindowStateSubKeys,
+} from "../enums/keys";
 // Types
-import type { DdmGameState } from "../enums/state";
-import type { DdmPluginKeys } from "../enums/keys";
+import type {
+  DdmGameState,
+  DdmWeatherState,
+  DdmWindowState,
+} from "../enums/state";
 import type { DdmPluginsEnabled } from "../types/ddmTypes";
 
 // ===================================================
@@ -16,7 +23,43 @@ import type { DdmPluginsEnabled } from "../types/ddmTypes";
  * The Core class that manages state.
  */
 class CoreManager implements DdmPluginsEnabled {
+  /**
+   * CoreDataManager singleton class.
+   */
   Data = DdmDataManager;
+  /**
+   * DdmStateManager<T> class.
+   */
+  GameState: DdmStateManager<DdmGameState>;
+  WeatherState: DdmStateManager<DdmWeatherState>;
+  WindowState: DdmStateManager<DdmWindowState>;
+
+  constructor() {
+    this.GameState = new DdmStateManager<DdmGameState>(
+      "empty",
+      GameStateSubKeys
+    );
+    this.WeatherState = new DdmStateManager<DdmWeatherState>(
+      "none",
+      WeatherStateSubKeys
+    );
+    this.WindowState = new DdmStateManager<DdmWindowState>(
+      "focus",
+      WindowStateSubKeys
+    );
+    this.addEventListeners();
+  }
+
+  // Window Event Listeners
+  addEventListeners() {
+    window.addEventListener("focus", () => {
+      this.WindowState.current = "focus";
+    });
+    window.addEventListener("blur", () => {
+      this.WindowState.current = "blur";
+    });
+  }
+  // End Window Event Listeners
 
   // Enabled Properties
   readonly PM!: boolean;
@@ -35,25 +78,6 @@ class CoreManager implements DdmPluginsEnabled {
     });
   }
   // End Enabled Properties
-
-  // GameState
-  #gameState: DdmGameState = "empty";
-
-  get gameState() {
-    return this.#gameState;
-  }
-
-  set gameState(newState: DdmGameState) {
-    if (GameState.includes(newState)) {
-      this.#gameState = newState;
-    }
-    if (this.NM && DdmApi.NM) DdmApi.NM.tickState(newState);
-  }
-  // End GameState
-
-  isWindowFocused() {
-    return isWinFocus();
-  }
 }
 
 const DdmCoreManager = new CoreManager();

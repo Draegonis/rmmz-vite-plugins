@@ -14,6 +14,9 @@ export const GameState = [
 ] as const;
 export type DdmGameState = LitteralUnion<(typeof GameState)[number]>;
 
+export const WindowState = ["blur", "focus"] as const;
+export type DdmWindowState = LitteralUnion<(typeof WindowState)[number]>;
+
 // ===================================================
 //                        NODE
 

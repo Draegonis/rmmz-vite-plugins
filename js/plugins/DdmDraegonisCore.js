@@ -127,36 +127,36 @@ PluginManager.registerCommand("DdmDraegonisCore", "forceLoad", ({ id }) => {
   // State Management =========
   Scene_Base.prototype.initialize = function () {
     DdmCore_Local.Alias.Scene_Base.initialize.call(this);
-    this._ddmState = "empty";
+    this._ddmGameState = "empty";
   };
 
   Scene_Title.prototype.initialize = function () {
     DdmCore_Local.Alias.Scene_Title.initialize.call(this);
-    this._ddmState = "title";
+    this._ddmGameState = "title";
   };
 
   Scene_Map.prototype.initialize = function () {
     DdmCore_Local.Alias.Scene_Map.initialize.call(this);
-    this._ddmState = "map";
+    this._ddmGameState = "map";
   };
 
   Scene_Battle.prototype.initialize = function () {
     DdmCore_Local.Alias.Scene_Battle.initialize.call(this);
-    this._ddmState = "battle";
+    this._ddmGameState = "battle";
   };
 
   Scene_MenuBase.prototype.initialize = function () {
     DdmCore_Local.Alias.Scene_MenuBase.initialize.call(this);
-    this._ddmState = "menu";
+    this._ddmGameState = "menu";
   };
 
   Scene_Shop.prototype.initialize = function () {
     DdmCore_Local.Alias.Scene_Shop.initialize.call(this);
-    this._ddmState = "shop";
+    this._ddmGameState = "shop";
   };
 
   Scene_Base.prototype.start = function () {
-    if (DdmApi.Core) DdmApi.Core.gameState = this._ddmState;
+    if (DdmApi.Core) DdmApi.Core.GameState.current = this._ddmGameState;
     DdmCore_Local.Alias.Scene_Base.start.call(this);
   };
   // End of State Management =====

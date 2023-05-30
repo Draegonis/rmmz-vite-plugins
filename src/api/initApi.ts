@@ -93,6 +93,8 @@ const initApi: DdmInitApi = {
         DdmApi.Core.Data.toNumber(secondsPerTick)
       );
 
+      DdmApi.Core.GameState.subscribe("nodeTick", DdmApi.NM.tickState);
+      DdmApi.Core.WindowState.subscribe("nodeTick", DdmApi.NM.windowTickState);
       console.log("Ddm NodeManager Initialized.");
 
       loadedPlugin();
