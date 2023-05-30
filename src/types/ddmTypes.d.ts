@@ -18,6 +18,10 @@ export type DdmPluginsEnabled = DdmEnforceKeysOfSameType<
 // ===================================================
 //                  PERSIST
 
+export type DdmPersistSaveData = {
+  persistUUID: string;
+};
+
 export type DdmPersistState = {
   isInit: boolean;
   currentId: string;
@@ -62,6 +66,11 @@ export type DdmNodeWorkerReturn = {
   };
 };
 
+export type DdmNodeSaveData = {
+  nodeEvents: DdmNodeEvent[];
+  nodeTracked: DdmNodeEventTracked;
+};
+
 export interface DdmNodeBaseEvent {
   type: DdmNodeGuardType;
   id: string;
@@ -99,6 +108,8 @@ export type DdmNodeEvent =
 
 // ===================================================
 //                    DATA
+
+export type DdmSaveData = DdmNodeSaveData & DdmPersistSaveData;
 
 // Helper
 export type DdmParserFuncs = Record<string, (target: string) => unknown>;

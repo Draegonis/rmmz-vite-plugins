@@ -24,6 +24,26 @@
  * @off Disable
  * @parent enabled
  *
+ * @command forceSave
+ * @text Force Save
+ * @desc With this you can make a backup.
+ *
+ * @arg id
+ * @text ID
+ * @type string
+ * @default "backup"
+ * @desc The string or number ID of the save.
+ *
+ * @command forceLoad
+ * @text Force Load
+ * @desc With this you can load a backup.
+ *
+ * @arg id
+ * @text ID
+ * @type string
+ * @default "backup"
+ * @desc The string or number ID of the save.
+ *
  * @help
  * Installation instructions and other information can be found in
  * DdmDraegonis.docx.
@@ -44,13 +64,35 @@ DdmApi.init.Core({
   type: "Core",
 });
 
+PluginManager.registerCommand("DdmDraegonisCore", "forceSave", ({ id }) => {
+  if (!DdmApi.Core) return;
+  DdmApi.Core.Data.onSave(id);
+});
+PluginManager.registerCommand("DdmDraegonisCore", "forceLoad", ({ id }) => {
+  if (!DdmApi.Core) return;
+  DdmApi.Core.Data.onLoad(id);
+});
+
 // ******** Plugin Body ********
 (() => {
+  if (!DdmApi.Core) {
+    throw new Error(
+      "DdmApi.Core did not initialize, please check your project to see if you installed the script properly."
+    );
+  }
+
   const DdmCore_Local = {
     Alias: {
+      Scene_Save: {
+        onSaveSuccess: Scene_Save.prototype.onSaveSuccess,
+      },
+      Scene_Load: {
+        onLoadSuccess: Scene_Load.prototype.onLoadSuccess,
+      },
       Scene_Base: {
         initialize: Scene_Base.prototype.initialize,
         start: Scene_Base.prototype.start,
+        onAutosaveSuccess: Scene_Base.prototype.onAutosaveSuccess,
       },
       Scene_Title: {
         initialize: Scene_Title.prototype.initialize,
@@ -69,7 +111,19 @@ DdmApi.init.Core({
       },
     },
   };
-
+  // Make custom save in indexeddb.
+  Scene_Save.prototype.onSaveSuccess = function () {
+    DdmNM_Local.Alias.Scene_Save.onSaveSuccess.call(this);
+    DdmApi.Core.Data.onSave(this.savefileId());
+  };
+  Scene_Base.prototype.onAutosaveSuccess = function () {
+    DdmNM_Local.Alias.Scene_Base.onAutosaveSuccess.call(this);
+    DdmApi.Core.Data.onSave(0);
+  };
+  Scene_Load.prototype.onLoadSuccess = function () {
+    DdmApi.Core.Data.onLoad(this.savefileId());
+    DdmNM_Local.Alias.Scene_Load.onLoadSuccess.call(this);
+  };
   // State Management =========
   Scene_Base.prototype.initialize = function () {
     DdmCore_Local.Alias.Scene_Base.initialize.call(this);
