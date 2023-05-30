@@ -6,6 +6,10 @@ import type {
 
 export {};
 
+/**
+ * Takes the data that was send from the main thread and performs the needed
+ * operations on it then returns it.
+ */
 onmessage = ({ data }: DdmNodeWorkerMessage) => {
   const eventTracked: DdmNodeEventTracked = {};
 
@@ -32,6 +36,10 @@ onmessage = ({ data }: DdmNodeWorkerMessage) => {
     }
   });
 
+  /**
+   * Returns the updated events as newEvents, the eventsToFire as the array of objects to perform game updates,
+   * and the newly added items into the eventTracked object.
+   */
   self.postMessage({
     eventsToFire,
     newEvents: newData,
