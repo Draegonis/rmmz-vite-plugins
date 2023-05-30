@@ -18,12 +18,19 @@ import type {
 // ===================================================
 //                  HELPERS
 
+/**
+ * A collection of funcs needed to parse an incoming string into a DdmCalender object.
+ */
 const CalenderParsers: DdmParserFuncs = {
   days: JSON.parse,
   months: JSON.parse,
   weeksInMonth: convertToNumber,
 };
-
+/**
+ * A functions that parses a string into a DdmCalender object.
+ * @param {string} target - the target string to parse.
+ * @returns {DdmCalender | undefined} DdmCalender if successful or undefined if it fails to parse.
+ */
 const parseCalender = (target: string): DdmCalender | undefined => {
   const newCalender = calenderSchema.parse(
     parseStructSchema(target, CalenderParsers)
@@ -38,6 +45,9 @@ const parseCalender = (target: string): DdmCalender | undefined => {
     totalDays: newCalender.days.length - 1,
   };
 };
+/**
+ * A collection of functions needed to parse a string into DdmNodeEvent object.
+ */
 const NodeEventParsers: DdmParserFuncs = {
   tick: convertToNumber,
   isTrackable: convertToBoolean,
@@ -47,7 +57,12 @@ const NodeEventParsers: DdmParserFuncs = {
   valriableId: convertToNumber,
   newvalue: convertToNumber,
 };
-
+/**
+ * The function to parse an incoming string into a DdmNodeEvent
+ * @param {string} target - the string to parse.
+ * @param {DdmNodeGuardType} type - a type guard string to be checked.
+ * @returns {DdmNodeEvent | undefined} - a DdmNodeEvent if successful or undefined if not.
+ */
 const parseNodeEvent = (
   target: string,
   type: DdmNodeGuardType
@@ -71,25 +86,23 @@ const parseNodeEvent = (
  */
 class CoreDataManager {
   /**
-   * @description A method to convert a string value to a number.
+   * @description Exposes the convertToNumber to the global api.
    * @param {string} value The string value to convert to a number.
    * @returns {number} Returns the converted string value or 0 if it fails.
    */
   toNumber(value: string): number {
     return convertToNumber(value);
   }
-
   /**
-   * @description A method to convert a string value to a boolean.
+   * @description Exposes the convertToBoolean to the global api.
    * @param {string} value The string value to convert to a boolean.
    * @returns {boolean} Returns a boolean.
    */
   toBoolean(value: string): boolean {
     return convertToBoolean(value);
   }
-
   /**
-   * @description A method to check if a string is in an enum const string array.
+   * @description Exposes the stringIsInEnum to the global api.
    * @param {string} target The string to check if it is in the enum.
    * @param {readonly string[]} enumToCheck The enum const string array to be checked against.
    * @returns {boolean} If target is a string in the enumToCheck returns true else false.
@@ -97,12 +110,21 @@ class CoreDataManager {
   stringIsInEnum(target: string, enumToCheck: readonly string[]): boolean {
     return stringIsInEnum(target, enumToCheck);
   }
-
+  /**
+   * @description Exposes the function to convert a string into a DdmCalender to the global api.
+   * @param {string} calenderStruct - the string to convert.
+   * @returns {DdmCalender | undefined} - a DdmCalender Object if successful or undefined if not.
+   */
   toCalender(calenderStruct: string): DdmCalender | undefined {
     if (!DdmApi.Core.NM) return;
     return parseCalender(calenderStruct);
   }
-
+  /**
+   * @description Exposes the function to convert a string into a DdmNodeEvent and calls the method on
+   * the NodeManager to schedule the event if it is not undefined.
+   * @param {string} nodeStruct - the string to convert into a DdmNodeEvent.
+   * @param {DdmNodeGuardType} type - the type string to guard against.
+   */
   toNodeEvent(nodeStruct: string, type: DdmNodeGuardType) {
     if (!DdmApi.Core.NM) return;
     const data = parseNodeEvent(nodeStruct, type);
