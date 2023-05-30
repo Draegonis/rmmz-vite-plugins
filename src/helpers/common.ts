@@ -1,9 +1,9 @@
 export const convertToNumber = (value: string): number => {
   return Number(value || 0);
 };
-
-export const converttoBoolean = (value: string): boolean => {
-  return value === "true";
+export const convertToBoolean = (value: string): boolean => {
+  const TEST = value.toLowerCase();
+  return TEST === "true";
 };
 
 export const stringIsInEnum = (
