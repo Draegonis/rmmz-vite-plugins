@@ -9,7 +9,7 @@ import {
 } from "../../helpers/common";
 // Types
 import type { DdmNodeGuardType } from "../../enums/keys";
-import type { DdmCalender, DdmNodeTypes } from "../../types/ddmTypes";
+import type { DdmCalender, DdmNodeEvent } from "../../types/ddmTypes";
 
 // ===================================================
 //                  HELPERS
@@ -48,9 +48,9 @@ const NodeEventParsers: Record<string, (target: string) => unknown> = {
 const parseNodeEvent = (
   target: string,
   type: DdmNodeGuardType
-): DdmNodeTypes | undefined => {
+): DdmNodeEvent | undefined => {
   if (stringIsInEnum(type, NodeTypeGuard)) {
-    return parseStructSchema(target, NodeEventParsers) as DdmNodeTypes;
+    return parseStructSchema(target, NodeEventParsers) as DdmNodeEvent;
   }
   return undefined;
 };
@@ -101,7 +101,7 @@ class CoreDataManager {
     if (!DdmApi.Core.NM) return;
     const data = parseNodeEvent(nodeStruct, type);
     if (data) {
-      DdmApi.NM.scheduleEvent(data as DdmNodeTypes);
+      DdmApi.NM.scheduleEvent(data as DdmNodeEvent);
     }
   }
 }

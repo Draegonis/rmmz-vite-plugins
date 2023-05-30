@@ -50,44 +50,52 @@ export type DdmAllPersistStore = DdmPersistState &
 // ===================================================
 //                   NODE
 
-export interface DdmNodeIndex {
-  [key: string]: number;
-}
+export type DdmNodeEventTracked = { [key: string]: number };
 
-export interface DdmNodeEventObject {
+export type DdmNodeWorkerMessage = { data: DdmNodeEvent[] };
+
+export type DdmNodeWorkerReturn = {
+  data: {
+    eventsToFire: DdmNodeEvent[] | undefined;
+    newEvents: DdmNodeEvent[];
+    newTracked: Record<string, number>;
+  };
+};
+
+export interface DdmNodeBaseEvent {
   type: DdmNodeGuardType;
   id: string;
   tick: number;
   isTrackable?: boolean;
 }
 
-export interface DdmNodeMapEvent extends DdmNodeEventObject {
+export interface DdmNodeMapEvent extends DdmNodeBaseEvent {
   type: "mapEvent" extends DdmNodeGuardType ? "mapEvent" : never;
   eventMap: number;
   eventId: number;
 }
 
-export interface DdmNodeSwitch extends DdmNodeEventObject {
+export interface DdmNodeSwitchEvent extends DdmNodeBaseEvent {
   type: "switch" extends DdmNodeGuardType ? "switch" : never;
   switchId: number;
   newValue: boolean;
 }
 
-export interface DdmNodeVariable extends DdmNodeEventObject {
+export interface DdmNodeVarEvent extends DdmNodeBaseEvent {
   type: "variable" extends DdmNodeGuardType ? "variable" : never;
   variableId: number;
   newValue: any;
 }
 
-export interface DdmNodeCustom extends DdmNodeEventObject {
+export interface DdmNodeCustomEvent extends DdmNodeBaseEvent {
   type: "custom" extends DdmNodeGuardType ? "custom" : never;
 }
 
-export type DdmNodeTypes =
+export type DdmNodeEvent =
   | DdmNodeMapEvent
-  | DdmNodeSwitch
-  | DdmNodeVariable
-  | DdmNodeCustom;
+  | DdmNodeSwitchEvent
+  | DdmNodeVarEvent
+  | DdmNodeCustomEvent;
 
 // Calender
 

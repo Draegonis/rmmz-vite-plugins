@@ -1,15 +1,19 @@
-import type { DdmNodeTypes } from "../types/ddmTypes";
+import type {
+  DdmNodeEvent,
+  DdmNodeWorkerMessage,
+  DdmNodeEventTracked,
+} from "../types/ddmTypes";
 
 export {};
 
-onmessage = ({ data }: { data: DdmNodeTypes[] }) => {
-  const eventTracked: { [key: string]: number } = {};
+onmessage = ({ data }: DdmNodeWorkerMessage) => {
+  const eventTracked: DdmNodeEventTracked = {};
 
   const setTracked = (eventId: string, tick: number) => {
     eventTracked[eventId] = tick;
   };
 
-  const eventsToFire: DdmNodeTypes[] = [];
+  const eventsToFire: DdmNodeEvent[] = [];
 
   const newData = data.filter((eventData) => {
     const { tick, isTrackable } = eventData;
