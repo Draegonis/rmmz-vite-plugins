@@ -68,27 +68,3 @@ export const TITLE = title ? title : "Ddm Draegonis";
 window.DdmApi = window.DdmApi || {};
 DdmApi.rmmzInit = false;
 DdmApi.init = initApi;
-
-// ===================================================
-//                   EVENT LISENERS
-
-let winFocsed = false;
-
-export const isWinFocus = () => winFocsed;
-
-const setWindowTickState = (state: boolean) =>
-  DdmApi.NM ? DdmApi.NM.windowTickState(state) : undefined;
-
-window.addEventListener("load", () => {
-  winFocsed = true;
-});
-
-window.addEventListener("focus", () => {
-  winFocsed = true;
-  setWindowTickState(winFocsed);
-});
-
-window.addEventListener("blur", () => {
-  winFocsed = false;
-  setWindowTickState(winFocsed);
-});

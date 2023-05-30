@@ -15,7 +15,7 @@ import type {
   DdmNodeEventTracked,
   DdmNodeSaveData,
 } from "../types/ddmTypes";
-import type { DdmGameState } from "../enums/state";
+import type { DdmGameState, DdmWindowState } from "../enums/state";
 
 const isNodeMapEvent = (data: DdmNodeEvent): data is DdmNodeMapEvent => {
   return (data as DdmNodeMapEvent).type === "mapEvent";
@@ -113,21 +113,24 @@ class DdmNodeManager {
     this.#autoTick = false;
   }
   /**
-   *
+   * A method to pause the tick when the window state changes.
    */
-  windowTickState(state: boolean) {
+  windowTickState(state: DdmWindowState extends string ? string : never) {
     if (!this.#autoTick) return;
-    if (state) {
-      this.tickState(DdmApi.Core.gameState);
-    } else {
-      if (this.#worker || this.#interval) this.stop();
+    switch (state) {
+      case "focus":
+        this.tickState(DdmApi.Core.GameState.current);
+        break;
+      case "blur":
+        if (this.#worker || this.#interval) this.stop();
+        break;
     }
   }
   /**
    * A method to automatically start/stop ticks. It is called in the CoreManager when gameState is set.
    * @param {DdmGameState} gameState - the game state that the game is currently in.
    */
-  tickState(gameState: DdmGameState) {
+  tickState(gameState: DdmGameState extends string ? string : never) {
     if (!this.#autoTick) return;
     if (gameState === "map" || gameState === "custom") this.start();
     else this.stop();

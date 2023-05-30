@@ -16,6 +16,24 @@ export const ApiKeys = [...PluginKeys, "Core"] as const;
 export type DdmApiKeys = LitteralUnion<(typeof ApiKeys)[number]>;
 
 // ===================================================
+//                     State
+
+export const GameStateSubKeys = ["nodeTick", "custom"] as const;
+export type DdmGameStateSubKeys = LitteralUnion<
+  (typeof GameStateSubKeys)[number]
+>;
+
+export const WeatherStateSubKeys = ["custom"] as const;
+export type DdmWeatherStateSubKeys = LitteralUnion<
+  (typeof WeatherStateSubKeys)[number]
+>;
+
+export const WindowStateSubKeys = ["nodeTick"] as const;
+export type DdmWindowStateSubKeys = LitteralUnion<
+  (typeof WindowStateSubKeys)[number]
+>;
+
+// ===================================================
 //                    STORAGE
 
 export const PersistStoredKeys = [
