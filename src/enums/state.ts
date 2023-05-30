@@ -1,7 +1,7 @@
 import type { LitteralUnion } from "../types/ddmTypes";
 
 // ===================================================
-//                  CORE STATE
+//                        CORE
 
 export const GameState = [
   "empty",
@@ -13,6 +13,9 @@ export const GameState = [
   "custom",
 ] as const;
 export type DdmGameState = LitteralUnion<(typeof GameState)[number]>;
+
+// ===================================================
+//                        NODE
 
 export const WeatherState = ["none", "rain", "storm", "snow"] as const;
 export type DdmWeatherState = LitteralUnion<(typeof WeatherState)[number]>;
