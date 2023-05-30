@@ -5,7 +5,7 @@ import { parseStructSchema } from "../../data/zod/zodHelpers";
 import {
   stringIsInEnum,
   convertToNumber,
-  converttoBoolean,
+  convertToBoolean,
 } from "../../helpers/common";
 // Types
 import type { DdmNodeGuardType } from "../../enums/keys";
@@ -37,7 +37,7 @@ const parseCalender = (target: string): DdmCalender | undefined => {
 
 const NodeEventParsers: Record<string, (target: string) => unknown> = {
   tick: convertToNumber,
-  isTrackable: converttoBoolean,
+  isTrackable: convertToBoolean,
   eventId: convertToNumber,
   eventMap: convertToNumber,
   switchId: convertToNumber,
@@ -79,7 +79,7 @@ class CoreDataManager {
    * @returns {boolean} Returns a boolean.
    */
   toBoolean(value: string): boolean {
-    return converttoBoolean(value);
+    return convertToBoolean(value);
   }
 
   /**
