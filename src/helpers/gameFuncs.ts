@@ -1,9 +1,26 @@
-/* =================================================== 
-                        HELPERS
-   =================================================== */
+// ===================================================
+//                      HELPERS
+
+import { DdmWeatherState } from "../enums/state";
 
 /**
- * @description A function used to verify if the id number is in the game switches array.
+ * @description A function to verify a number is in the Colour range.
+ * @param {number} range - the number to verify. For colours the range is -255 - 255.
+ * @param {boolean | undefined} greyScale - if the range is a grey scale value, which is 0-255.
+ * @returns {number} - the range returned.
+ */
+export const verifyColourRange = (
+  range: number,
+  greysScale?: boolean
+): number => {
+  let lowerRange = greysScale ? 0 : -255;
+  if (range < lowerRange) return lowerRange;
+  if (range > 255) return 255;
+  return range;
+};
+/**
+ * @description A function used to verify if the id number
+ * for $gameSwitches is valid and is initialized.
  * @param {number} id The id number of the game switch.
  * @returns {boolean} Returns true if passed verification.
  */
@@ -12,9 +29,9 @@ const verifyGameSwitch = (id: number): boolean => {
     $gameSwitches && $dataSystem && id > 0 && id < $dataSystem.switches.length
   );
 };
-
 /**
- * @description A function used to verify if the id number is in the game variables array.
+ * @description A function used to verify if the id number
+ * for $gameVariables is valid and is initialized.
  * @param {number} id The id number of the game variable.
  * @returns {boolean} Returns true if passed verification.
  */
@@ -23,17 +40,109 @@ const verifyGameVariable = (id: number): boolean => {
     $gameSwitches && $dataSystem && id > 0 && id < $dataSystem.variables.length
   );
 };
+/**
+ * @description A function to varify if the arguements for
+ * $gameSelfSwitches are valid values and is initialized.
+ * @param {number} mapId - the number id of the map.
+ * @param {number} eventId - the number id of the event.
+ * @param {string} switchId - the string id of the switch.
+ * @returns {boolean} if all conditions are met it returns true.
+ */
+const verifySelfSwitch = (
+  mapId: number,
+  eventId: number,
+  switchId: string
+): boolean => {
+  const swId = switchId.toUpperCase();
+  return (
+    $gameSelfSwitches &&
+    mapId > 1 &&
+    eventId > 1 &&
+    $gameSelfSwitches.value([mapId, eventId, swId])
+  );
+};
 
-/* =================================================== 
-                        UTILITY
-   =================================================== */
+// ===================================================
+//                      UTILITY
 
 /**
- * @description The functions to set data into either $gameSwitches or $gameVariables.
- * @property {(switchId: number, newValue: boolean) => void} switch - a function to set a boolean in $gameSwitches.
- * @property {(variableId: number, newValue: any | any[]) => void} var - a function to set a single value or array of values in $gameVariables.
+ * @description Object holder for methods that allow you to call
+ * a callback on a set of ranges.
  */
-const setGameVariables = {
+export const setByRange = {
+  /**
+   * @description Method that uses a callback each iteration of a range.
+   * @param {number} first - the first number of the range inclusive.
+   * @param {number} last - the last number of the range inclusive.
+   * @param {(num: number) => void} callback - the callback to be called
+   * on each iteration of the range that takes a number arguement.
+   */
+  forEach(first: number, last: number, callback: (num: number) => void) {
+    for (let num = first; num <= last; num++) {
+      callback(num);
+    }
+  },
+  /**
+   * @description Method that wraps the $gameSelfSwitches.setValue but called
+   * for a range of event id of the map.
+   * @param {number} mapId - the number id of the map.
+   * @param {string} switchId - the string value of the switch.
+   * @param {number} first - the first number of the range inclusive.
+   * @param {number} last - the last number of the range inclusive.
+   * @param {boolean} newValue - the new value of all the self switches.
+   */
+  selfSwitch(
+    mapId: number,
+    switchId: string,
+    first: number,
+    last: number,
+    newValue: boolean
+  ) {
+    const swId = switchId.toUpperCase();
+    this.forEach(first, last, function (num: number) {
+      if (verifySelfSwitch(mapId, num, switchId)) {
+        $gameSelfSwitches.setValue([mapId, num, swId], newValue);
+      }
+    });
+  },
+  /**
+   * @description Method that wraps the $gameSwitches.setValue for a range
+   * ids to the same new value.
+   * @param {number} first - the first number of the range inclusive.
+   * @param {number} last - the last number of the range inclusive.
+   * @param {boolean} newValue - the new boolean value for all the switches.
+   */
+  switch(first: number, last: number, newValue: boolean) {
+    this.forEach(first, last, function (num: number) {
+      if (verifyGameSwitch(num)) {
+        $gameSwitches.setValue(num, newValue);
+      }
+    });
+  },
+  /**
+   * @description Method that wraps the $gameVariables.setValue for a range
+   * ids to the same new value.
+   * @param {number} first - the first number of the range inclusive.
+   * @param {number} last - the last number of the range inclusive.
+   * @param {any} newValue - the new value to set to all the ids.
+   */
+  var(first: number, last: number, newValue: any) {
+    this.forEach(first, last, function (num: number) {
+      if (verifyGameVariable(num)) {
+        $gameVariables.setValue(num, newValue);
+      }
+    });
+  },
+};
+/**
+ * @description Object holder for the function wrappers for $gameSwitches.setValue or $gameVariables.setValue.
+ */
+export const setGameVariables = {
+  /**
+   * @description A function wrapper for $gameSwitches.setValue.
+   * @param {number} switchId - the switch id to set the value to.
+   * @param {boolean} newValue - the new value for the switch.
+   */
   switch: (switchId: number, newValue: boolean) => {
     if (verifyGameSwitch(switchId)) {
       $gameSwitches.setValue(switchId, newValue);
@@ -45,13 +154,16 @@ const setGameVariables = {
     }
   },
 };
-
 /**
- * @description The functions to get data from either $gameSwitches or $gameVariables.
- * @property {(switchId: number) => boolean | undefined} switch - a function to get a value from $gameSwitches, returns undefined if it fails.
- * @property {(variableId: number) => any | any[] | undefined} var - a function to get a value(s) from $gameVariables, returns undefined if it fails.
+ * @description Object holder for the function wrappers for
+ * $gameSwitches.value or $gameVariables.value.
  */
-const getGameVariables = {
+export const getGameVariables = {
+  /**
+   * A function wrapper on $gameSwitches.value.
+   * @param {number} switchId - the switch id number to get the value of.
+   * @returns {boolean | null} - a boolean or null if the value is not found.
+   */
   switch: (switchId: number): boolean | null => {
     let switchBoolean = null;
     if (verifyGameSwitch(switchId)) {
@@ -59,6 +171,11 @@ const getGameVariables = {
     }
     return switchBoolean;
   },
+  /**
+   * A function wrapper on $gameVariable.value.
+   * @param {number} variableId - the id number of the variable to get
+   * @returns {any | any[] | null} - the value of the gameVariable or null if not found.
+   */
   var: (variableId: number): any | any[] | null => {
     let variableValue = null;
     if (verifyGameVariable(variableId)) {
@@ -67,16 +184,13 @@ const getGameVariables = {
     return variableValue;
   },
 };
-
-/* 
-      $gameScreen.startTint([red, green, blue, grey], frames);
-      $gameScreen.changeWeather(type, power, frames);
-      "for (var n = id1; n <= id2; n++) {
-        operation
-      }"
-      $gameTemp.reserveCommonEvent(id);
-    */
-
+/**
+ * A function wrapper on $gameSelfSwitches.
+ * @param {number} mapId - the id number of the map.
+ * @param {number} eventId - the id number of the event on that map.
+ * @param {number} switchId - the string id of the self switch.
+ * @param {boolean} newValue - the new boolean value of the switch.
+ */
 export const setEventSelfSwitch = (
   mapId: number,
   eventId: number,
@@ -85,12 +199,63 @@ export const setEventSelfSwitch = (
 ) => {
   if (mapId > 0 && eventId > 0 && switchId !== "") {
     const swId = switchId.toUpperCase();
-    $gameSelfSwitches.setValue([mapId, eventId, swId], newValue);
+    if (verifySelfSwitch(mapId, eventId, switchId)) {
+      $gameSelfSwitches.setValue([mapId, eventId, swId], newValue);
+    }
   }
 };
-
-/* =================================================== 
-                        EXPORT
-   =================================================== */
-
-export { setGameVariables, getGameVariables };
+/**
+ * A function wrapper on $gameScreen.changeWeather.
+ * @param {DdmWeatherState} type - the weather state to set to.
+ * @param {number} power - the strength of the effect of weather.
+ * @param {number} frames - the number of frames it lasts for.
+ */
+export const setWeatherState = (
+  type: DdmWeatherState,
+  power: number,
+  frames: number
+) => {
+  const FRAMES = frames > 0 ? frames : 1;
+  const POWER = power > 9 ? 9 : power > 0 ? power : 1;
+  if ($gameScreen) $gameScreen.changeWeather(type, POWER, FRAMES);
+};
+/**
+ * A function that stops the current weather effect.
+ */
+export const stopWeather = () => {
+  if ($gameScreen) $gameScreen.changeWeather("none", 0, 1);
+};
+/**
+ * @description A function wrapper on $gameScreen.startTint, also verifies the values.
+ * @param {number} red - the red number value of the colour.
+ * @param {number} green - the green number value of the colour.
+ * @param {number} blue - the blue number value of the colour.
+ * @param {number} greysScale - the grey scale value of the colour.
+ * @param {number} frames - the number of frames the screen tint lasts for.
+ * Aprox 60 frames per second unless modified.
+ */
+export const setScreenTint = (
+  red: number,
+  green: number,
+  blue: number,
+  greysScale: number,
+  frames: number
+) => {
+  if (!$gameScreen) return;
+  $gameScreen.startTint(
+    [
+      verifyColourRange(red),
+      verifyColourRange(green),
+      verifyColourRange(blue),
+      verifyColourRange(greysScale, true),
+    ],
+    frames > 0 ? frames : 1
+  );
+};
+/**
+ * @description A function wrapper on $gameTemp.reserveCommonEvent.
+ * @param {number} id - the id of the common event to run.
+ */
+export const reserveCommonEvent = (id: number) => {
+  if (id > 0) $gameTemp.reserveCommonEvent(id);
+};
