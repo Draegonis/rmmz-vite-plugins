@@ -4,16 +4,12 @@ import { DdmStateManager } from "./Core/StateManager";
 // Enums
 import {
   DdmPluginKeys,
-  GameStateSubKeys,
-  WeatherStateSubKeys,
-  WindowStateSubKeys,
+  GAMESTATE_SUB_KEYS,
+  WEATHER_SUB_KEYS,
+  WINDOW_SUB_KEYS,
 } from "../enums/keys";
+import { GAME_STATE, WEATHER_STATE, WINDOW_STATE } from "../enums/state";
 // Types
-import type {
-  DdmGameState,
-  DdmWeatherState,
-  DdmWindowState,
-} from "../enums/state";
 import type { DdmPluginsEnabled } from "../types/ddmTypes";
 
 // ===================================================
@@ -30,33 +26,36 @@ class CoreManager implements DdmPluginsEnabled {
   /**
    * DdmStateManager<T> class.
    */
-  GameState: DdmStateManager<DdmGameState>;
-  WeatherState: DdmStateManager<DdmWeatherState>;
-  WindowState: DdmStateManager<DdmWindowState>;
+  GameState: DdmStateManager<GAME_STATE, typeof GAMESTATE_SUB_KEYS>;
+  WeatherState: DdmStateManager<WEATHER_STATE, typeof WEATHER_SUB_KEYS>;
+  WindowState: DdmStateManager<WINDOW_STATE, typeof WINDOW_SUB_KEYS>;
 
   constructor() {
-    this.GameState = new DdmStateManager<DdmGameState>(
-      "empty",
-      GameStateSubKeys
+    this.GameState = new DdmStateManager<GAME_STATE, typeof GAMESTATE_SUB_KEYS>(
+      GAME_STATE.EMPTY,
+      GAMESTATE_SUB_KEYS
     );
-    this.WeatherState = new DdmStateManager<DdmWeatherState>(
-      "none",
-      WeatherStateSubKeys
-    );
-    this.WindowState = new DdmStateManager<DdmWindowState>(
-      "focus",
-      WindowStateSubKeys
-    );
+
+    this.WeatherState = new DdmStateManager<
+      WEATHER_STATE,
+      typeof WEATHER_SUB_KEYS
+    >(WEATHER_STATE.NONE, WEATHER_SUB_KEYS);
+
+    this.WindowState = new DdmStateManager<
+      WINDOW_STATE,
+      typeof WINDOW_SUB_KEYS
+    >(WINDOW_STATE.FOCUS, WINDOW_SUB_KEYS);
+
     this.addEventListeners();
   }
 
   // Window Event Listeners
   addEventListeners() {
     window.addEventListener("focus", () => {
-      this.WindowState.current = "focus";
+      this.WindowState.current = WINDOW_STATE.FOCUS;
     });
     window.addEventListener("blur", () => {
-      this.WindowState.current = "blur";
+      this.WindowState.current = WINDOW_STATE.BLUR;
     });
   }
   // End Window Event Listeners

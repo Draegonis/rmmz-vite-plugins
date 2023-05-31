@@ -1,17 +1,12 @@
-import { stringIsInEnum } from "../../helpers/common";
-
-class DdmStateManager<T> {
-  #current: T extends string ? string : never;
-  #last: T extends string ? string : never;
-  #stateSubKeys: readonly string[];
+class DdmStateManager<T, K> {
+  #current: T;
+  #last: T;
+  #stateSubKeys: K;
   #subScribed: {
-    [key: string]: (state: T extends string ? string : never) => void;
+    [key: string]: (state: T) => void;
   } = {};
 
-  constructor(
-    initState: T extends string ? string : never,
-    stateSubKeys: readonly string[]
-  ) {
+  constructor(initState: T, stateSubKeys: K) {
     this.#current = initState;
     this.#last = initState;
     this.#stateSubKeys = stateSubKeys;
@@ -20,7 +15,7 @@ class DdmStateManager<T> {
   get current() {
     return this.#current;
   }
-  set current(newState: T extends string ? string : never) {
+  set current(newState: T) {
     this.#current = newState;
     if (this.#last !== newState) {
       this.#last = newState;
@@ -31,23 +26,25 @@ class DdmStateManager<T> {
    * Method to use callbacks based on state change.
    * @param {string} state - the current state on change.
    */
-  onStateChange(state: T extends string ? string : never) {
-    this.#stateSubKeys.forEach((key) => {
-      if (this.#subScribed[key]) {
-        this.#subScribed[key](state);
+  onStateChange(state: T) {
+    Object.keys(this.#stateSubKeys as K extends {} ? K : never).forEach(
+      (key) => {
+        if (this.#subScribed[key]) {
+          this.#subScribed[key](state);
+        }
       }
-    });
+    );
   }
   /**
    * Method to register callbacks to a subscription keys.
    * @param {string} key - the key to access the callback.
    * @param {(state: string) => void} callback - the callback to be called with the change of state.
    */
-  subscribe(
-    key: string,
-    callback: (state: T extends string ? string : never) => void
-  ) {
-    if (stringIsInEnum(key, this.#stateSubKeys) && !this.#subScribed[key]) {
+  subscribe(key: string, callback: (state: T) => void) {
+    if (
+      key in (this.#stateSubKeys as K extends {} ? K : never) &&
+      !this.#subScribed[key]
+    ) {
       this.#subScribed[key] = callback;
     }
   }

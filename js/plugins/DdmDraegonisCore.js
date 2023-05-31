@@ -84,7 +84,7 @@ PluginManager.registerCommand("DdmDraegonisCore", "forceLoad", ({ id }) => {
   const DdmCore_Local = {
     Alias: {
       Scene_Save: {
-        onSaveSuccess: Scene_Save.prototype.onSaveSuccess,
+        executeSave: Scene_Save.prototype.executeSave,
       },
       Scene_Load: {
         onLoadSuccess: Scene_Load.prototype.onLoadSuccess,
@@ -92,7 +92,7 @@ PluginManager.registerCommand("DdmDraegonisCore", "forceLoad", ({ id }) => {
       Scene_Base: {
         initialize: Scene_Base.prototype.initialize,
         start: Scene_Base.prototype.start,
-        onAutosaveSuccess: Scene_Base.prototype.onAutosaveSuccess,
+        executeAutosave: Scene_Base.prototype.executeAutosave,
       },
       Scene_Title: {
         initialize: Scene_Title.prototype.initialize,
@@ -112,47 +112,47 @@ PluginManager.registerCommand("DdmDraegonisCore", "forceLoad", ({ id }) => {
     },
   };
   // Make custom save in indexeddb.
-  Scene_Save.prototype.onSaveSuccess = function () {
-    DdmNM_Local.Alias.Scene_Save.onSaveSuccess.call(this);
-    DdmApi.Core.Data.onSave(this.savefileId());
+  Scene_Save.prototype.executeSave = function (savefileId) {
+    DdmCore_Local.Alias.Scene_Save.executeSave.call(this, savefileId);
+    DdmApi.Core.Data.onSave(savefileId);
   };
-  Scene_Base.prototype.onAutosaveSuccess = function () {
-    DdmNM_Local.Alias.Scene_Base.onAutosaveSuccess.call(this);
+  Scene_Base.prototype.executeAutosave = function () {
+    DdmCore_Local.Alias.Scene_Base.executeAutosave.call(this);
     DdmApi.Core.Data.onSave(0);
   };
   Scene_Load.prototype.onLoadSuccess = function () {
     DdmApi.Core.Data.onLoad(this.savefileId());
-    DdmNM_Local.Alias.Scene_Load.onLoadSuccess.call(this);
+    DdmCore_Local.Alias.Scene_Load.onLoadSuccess.call(this);
   };
   // State Management =========
   Scene_Base.prototype.initialize = function () {
     DdmCore_Local.Alias.Scene_Base.initialize.call(this);
-    this._ddmGameState = "empty";
+    this._ddmGameState = "EMPTY";
   };
 
   Scene_Title.prototype.initialize = function () {
     DdmCore_Local.Alias.Scene_Title.initialize.call(this);
-    this._ddmGameState = "title";
+    this._ddmGameState = "TITLE";
   };
 
   Scene_Map.prototype.initialize = function () {
     DdmCore_Local.Alias.Scene_Map.initialize.call(this);
-    this._ddmGameState = "map";
+    this._ddmGameState = "MAP";
   };
 
   Scene_Battle.prototype.initialize = function () {
     DdmCore_Local.Alias.Scene_Battle.initialize.call(this);
-    this._ddmGameState = "battle";
+    this._ddmGameState = "BATTLE";
   };
 
   Scene_MenuBase.prototype.initialize = function () {
     DdmCore_Local.Alias.Scene_MenuBase.initialize.call(this);
-    this._ddmGameState = "menu";
+    this._ddmGameState = "MENU";
   };
 
   Scene_Shop.prototype.initialize = function () {
     DdmCore_Local.Alias.Scene_Shop.initialize.call(this);
-    this._ddmGameState = "shop";
+    this._ddmGameState = "SHOP";
   };
 
   Scene_Base.prototype.start = function () {
