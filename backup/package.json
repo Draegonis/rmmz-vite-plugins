@@ -1,7 +1,7 @@
 {
   "name": "draegonis-rmmz-vite-plugins",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.2",
   "homepage": "./",
   "type": "module",
   "scripts": {
@@ -11,7 +11,6 @@
     "license": "generate-license-file --input package.json --output third-party-licenses.txt --overwrite"
   },
   "devDependencies": {
-    "@types/pako": "^2.0.0",
     "@types/ramda": "^0.29.1",
     "@types/uuid": "^9.0.1",
     "generate-license-file": "^2.0.0",
@@ -19,9 +18,9 @@
     "vite": "^4.3.2"
   },
   "dependencies": {
+    "fflate": "^0.8.0",
     "idb-keyval": "^6.2.1",
     "immer": "^10.0.2",
-    "pako": "^2.1.0",
     "ramda": "^0.29.0",
     "react": "^18.2.0",
     "uuid": "^9.0.0",

@@ -3,7 +3,7 @@ import { calenderSchema } from "../../data/zod/NodeIndex";
 // Storage
 import { TITLE } from "../../game";
 import { set, get } from "idb-keyval";
-import { inflate, deflate } from "pako";
+import { strToU8, strFromU8, compressSync, decompressSync } from "fflate";
 // Helpers
 import { isEmpty } from "ramda";
 import { parseStructSchema } from "../../data/zod/zodHelpers";
@@ -158,14 +158,16 @@ class CoreDataManager {
     });
 
     const jsonData = JSON.stringify(saveData);
-    const compressData = deflate(jsonData);
+    const buffer = strToU8(jsonData);
+    const compressData = compressSync(buffer);
     await set(saveName, compressData);
   }
 
   async onLoad(saveID: number | string) {
     const saveName = `${TITLE}-File-${saveID}`;
     const str = await get(saveName);
-    const restored = inflate(str, { to: "string" });
+    const decompressed = decompressSync(str);
+    const restored = strFromU8(decompressed);
     const saveData = JSON.parse(restored) as DdmSaveData;
 
     PluginKeys.forEach((plugin) => {
