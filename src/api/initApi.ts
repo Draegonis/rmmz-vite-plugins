@@ -3,7 +3,7 @@ import { DdmPersistManager } from "../managers/PersistManager";
 import { DdmCoreManager } from "../managers/CoreManager";
 import { DdmNodeManager } from "../managers/NodeManager";
 // Enums
-import { PluginKeys } from "../enums/keys";
+import { GAMESTATE_SUB_KEYS, PluginKeys, WINDOW_SUB_KEYS } from "../enums/keys";
 // Types
 import type {
   DdmCoreParams,
@@ -93,8 +93,12 @@ const initApi: DdmInitApi = {
         DdmApi.Core.Data.toNumber(secondsPerTick)
       );
 
-      DdmApi.Core.GameState.subscribe("nodeTick", DdmApi.NM.tickState);
-      DdmApi.Core.WindowState.subscribe("nodeTick", DdmApi.NM.windowTickState);
+      DdmApi.Core.GameState.subscribe(GAMESTATE_SUB_KEYS.NODETICK, (state) => {
+        DdmApi.NM.tickState(state);
+      });
+      DdmApi.Core.WindowState.subscribe(WINDOW_SUB_KEYS.NODETICK, (state) => {
+        DdmApi.NM.windowTickState(state);
+      });
       console.log("Ddm NodeManager Initialized.");
 
       loadedPlugin();

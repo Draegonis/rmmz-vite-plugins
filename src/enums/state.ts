@@ -1,27 +1,34 @@
-import type { LitteralUnion } from "../types/ddmTypes";
-
 // ===================================================
 //                        CORE
 
-export const GameState = [
-  "empty",
-  "title",
-  "map",
-  "battle",
-  "menu",
-  "shop",
-  "custom",
-] as const;
-export type DdmGameState = LitteralUnion<(typeof GameState)[number]>;
+export enum GAME_STATE {
+  "EMPTY" = "EMPTY",
+  "TITLE" = "TITLE",
+  "MAP" = "MAP",
+  "BATTLE" = "BATTLE",
+  "MENU" = "MENU",
+  "SHOP" = "SHOP",
+  "CUSTOM" = "CUSTOM",
+}
 
-export const WindowState = ["blur", "focus"] as const;
-export type DdmWindowState = LitteralUnion<(typeof WindowState)[number]>;
+export enum WINDOW_STATE {
+  BLUR = "BLUR",
+  FOCUS = "FOCUS",
+}
 
 // ===================================================
 //                        NODE
 
-export const WeatherState = ["none", "rain", "storm", "snow"] as const;
-export type DdmWeatherState = LitteralUnion<(typeof WeatherState)[number]>;
+export enum WEATHER_STATE {
+  "NONE" = "NONE",
+  "RAIN" = "RAIN",
+  "STORM" = "STORM",
+  "SNOW" = "SNOW",
+}
 
-export const TintState = ["normal", "dawn", "dusk", "cloudy", "night"] as const;
-export type DdmTintState = LitteralUnion<(typeof TintState)[number]>;
+export enum TINT_STATE {
+  "NORMAL" = "NORMAL",
+  "DAWN" = "DAWN",
+  "CLOUDY" = "CLOUDY",
+  "NIGHT" = "NIGHT",
+}

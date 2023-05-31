@@ -18,20 +18,18 @@ export type DdmApiKeys = LitteralUnion<(typeof ApiKeys)[number]>;
 // ===================================================
 //                     State
 
-export const GameStateSubKeys = ["nodeTick", "custom"] as const;
-export type DdmGameStateSubKeys = LitteralUnion<
-  (typeof GameStateSubKeys)[number]
->;
+export enum GAMESTATE_SUB_KEYS {
+  "NODETICK" = "NODETICK",
+  "CUSTOM" = "CUSTOM",
+}
 
-export const WeatherStateSubKeys = ["custom"] as const;
-export type DdmWeatherStateSubKeys = LitteralUnion<
-  (typeof WeatherStateSubKeys)[number]
->;
+export enum WEATHER_SUB_KEYS {
+  "CUSTOM" = "CUSTOM",
+}
 
-export const WindowStateSubKeys = ["nodeTick"] as const;
-export type DdmWindowStateSubKeys = LitteralUnion<
-  (typeof WindowStateSubKeys)[number]
->;
+export enum WINDOW_SUB_KEYS {
+  NODETICK = "NODETICK",
+}
 
 // ===================================================
 //                    STORAGE
