@@ -1,6 +1,6 @@
-import type { DdmCalender } from "../../types/ddmTypes";
+import type { DdmCalendar } from "../../types/ddmTypes";
 
-export const CALENDER: DdmCalender = {
+export const CALENDAR: DdmCalendar = {
   year: 0,
   weeksInMonth: 4,
   totalMonths: 12,

@@ -7,7 +7,7 @@ import { v4 as uuidV4 } from "uuid";
 import { GAME_STATE, WINDOW_STATE } from "../enums/state";
 // Types
 import type {
-  DdmCalender,
+  DdmCalendar,
   DdmNodeEvent,
   DdmNodeMapEvent,
   DdmNodeVarEvent,
@@ -61,14 +61,14 @@ class DdmNodeManager {
 
   #eventCache: DdmNodeEvent[] = [];
 
-  // #calender: DdmCalender;
+  // #calendar: DdmCalendar;
   // #currentDay = 1;
   // #currentWeek = 1;
   // #currentMonth = 1;
 
-  constructor(_calender: DdmCalender, secondsPerTick: number) {
+  constructor(_calendar: DdmCalendar, secondsPerTick: number) {
     this.#secondsPerTick = secondsPerTick;
-    // this.#calender = calender;
+    // this.#calendar = calendar;
     this.#worker = undefined;
   }
 

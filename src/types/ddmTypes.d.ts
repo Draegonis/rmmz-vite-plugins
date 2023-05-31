@@ -4,7 +4,7 @@ import type {
   DdmPluginKeys,
   DdmNodeGuardType,
 } from "../enums/keys";
-import type { DdmCalenderParam } from "../data/zod/NodeIndex";
+import type { DdmCalendarParam } from "../data/zod/NodeIndex";
 import type { DdmTintState } from "../enums/state";
 
 // ===================================================
@@ -114,8 +114,8 @@ export type DdmSaveData = DdmNodeSaveData & DdmPersistSaveData;
 // Helper
 export type DdmParserFuncs = Record<string, (target: string) => unknown>;
 
-// Calender
-export interface DdmCalender extends DdmCalenderParam {
+// Calendar
+export interface DdmCalendar extends DdmCalendarParam {
   year: number;
   totalMonths: number;
   totalDays: number;
@@ -153,7 +153,7 @@ export interface DdmPersistParams {
 
 export interface DdmNodeParams {
   type: "NM";
-  calender: string; // DdmCalender
+  calendar: string; // Ddmcalendar
   secondsPerTick: string; // number
 }
 

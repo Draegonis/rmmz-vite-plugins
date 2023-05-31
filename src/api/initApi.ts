@@ -12,7 +12,7 @@ import type {
   DdmNodeParams,
   DdmAllParams,
 } from "../types/ddmTypes";
-import { CALENDER } from "../data/defaults/NodeDefaults";
+import { CALENDAR } from "../data/defaults/NodeDefaults";
 
 // ===================================================
 //                    INITAPI
@@ -86,10 +86,10 @@ const initApi: DdmInitApi = {
     DdmApi.NM = DdmApi.NM || {};
 
     if (isNodeParams(params)) {
-      const { calender, secondsPerTick } = params;
+      const { calendar, secondsPerTick } = params;
 
       DdmApi.NM = new DdmNodeManager(
-        DdmApi.Core.Data.toCalender(calender) || CALENDER,
+        DdmApi.Core.Data.toCalendar(calendar) || CALENDAR,
         DdmApi.Core.Data.toNumber(secondsPerTick)
       );
 

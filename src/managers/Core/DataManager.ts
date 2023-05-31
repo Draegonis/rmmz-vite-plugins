@@ -1,5 +1,5 @@
 import { DataStorageKeys, NodeTypeGuard, PluginKeys } from "../../enums/keys";
-import { calenderSchema } from "../../data/zod/NodeIndex";
+import { calendarSchema } from "../../data/zod/NodeIndex";
 // Storage
 import { TITLE } from "../../game";
 import { set, get } from "idb-keyval";
@@ -15,7 +15,7 @@ import {
 // Types
 import type { DdmNodeGuardType } from "../../enums/keys";
 import type {
-  DdmCalender,
+  DdmCalendar,
   DdmNodeEvent,
   DdmNodeSaveData,
   DdmParserFuncs,
@@ -27,30 +27,30 @@ import type {
 //                  HELPERS
 
 /**
- * A collection of funcs needed to parse an incoming string into a DdmCalender object.
+ * A collection of funcs needed to parse an incoming string into a DdmCalendar object.
  */
-const CalenderParsers: DdmParserFuncs = {
+const CalendarParsers: DdmParserFuncs = {
   days: JSON.parse,
   months: JSON.parse,
   weeksInMonth: convertToNumber,
 };
 /**
- * A functions that parses a string into a DdmCalender object.
+ * A functions that parses a string into a DdmCalendar object.
  * @param {string} target - the target string to parse.
- * @returns {DdmCalender | undefined} DdmCalender if successful or undefined if it fails to parse.
+ * @returns {DdmCalendar | undefined} DdmCalendar if successful or undefined if it fails to parse.
  */
-const parseCalender = (target: string): DdmCalender | undefined => {
-  const newCalender = calenderSchema.parse(
-    parseStructSchema(target, CalenderParsers)
+const parseCalendar = (target: string): DdmCalendar | undefined => {
+  const newCalendar = calendarSchema.parse(
+    parseStructSchema(target, CalendarParsers)
   );
 
-  if (!newCalender) return undefined;
+  if (!newCalendar) return undefined;
 
   return {
-    ...newCalender,
+    ...newCalendar,
     year: 0,
-    totalMonths: newCalender.months.length - 1,
-    totalDays: newCalender.days.length - 1,
+    totalMonths: newCalendar.months.length - 1,
+    totalDays: newCalendar.days.length - 1,
   };
 };
 /**
@@ -121,13 +121,13 @@ class CoreDataManager {
     return stringIsInEnum(target, enumToCheck);
   }
   /**
-   * @description Exposes the function to convert a string into a DdmCalender to the global api.
-   * @param {string} calenderStruct - the string to convert.
-   * @returns {DdmCalender | undefined} - a DdmCalender Object if successful or undefined if not.
+   * @description Exposes the function to convert a string into a DdmCalendar to the global api.
+   * @param {string} calendarStruct - the string to convert.
+   * @returns {DdmCalendar | undefined} - a DdmCalendar Object if successful or undefined if not.
    */
-  toCalender(calenderStruct: string): DdmCalender | undefined {
+  toCalendar(calendarStruct: string): DdmCalendar | undefined {
     if (!DdmApi.Core.NM) return;
-    return parseCalender(calenderStruct);
+    return parseCalendar(calendarStruct);
   }
   /**
    * @description Exposes the function to convert a string into a DdmNodeEvent and calls the method on

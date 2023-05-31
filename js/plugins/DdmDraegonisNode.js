@@ -11,10 +11,10 @@
  * @param settings
  * @text Settings
  *
- * @param calender
- * @text Calender
- * @desc The structure of the calender to be used in the game.
- * @type struct<Calender>
+ * @param calendar
+ * @text Calendar
+ * @desc The structure of the calendar to be used in the game.
+ * @type struct<Calendar>
  * @parent settings
  *
  * @param secondsPerTick
@@ -67,7 +67,7 @@
  *
  * Released under the MIT License.
  */
-/*~struct~Calender:
+/*~struct~Calendar:
  *
  * @param days
  * @text Day Names
