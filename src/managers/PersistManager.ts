@@ -4,7 +4,7 @@ import { persist, devtools } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { enableMapSet } from "immer";
 import { get, set, del } from "idb-keyval";
-import { inflate, deflate } from "pako";
+import { strToU8, strFromU8, compressSync, decompressSync } from "fflate";
 // Helpers
 import { fetchJsonSchema } from "../data/zod/zodHelpers";
 import { setGameVariables, getGameVariables } from "../helpers/gameFuncs";
@@ -237,7 +237,8 @@ const persistStore = create<DdmAllPersistStore>()(
         storage: {
           getItem: async (name) => {
             const str = await get(name);
-            const restored = inflate(str, { to: "string" });
+            const decompressed = decompressSync(str);
+            const restored = strFromU8(decompressed);
             const storeState = JSON.parse(restored) as DdmPersistState;
             return {
               state: {
@@ -263,7 +264,8 @@ const persistStore = create<DdmAllPersistStore>()(
                 },
               },
             });
-            const compressed = deflate(str);
+            const buffer = strToU8(str);
+            const compressed = compressSync(buffer);
             await set(name, compressed);
           },
           removeItem: async (name) => await del(name),
