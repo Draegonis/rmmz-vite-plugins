@@ -1,7 +1,7 @@
 // ===================================================
 //                      HELPERS
 
-import { DdmWeatherState } from "../enums/state";
+import { WEATHER_STATE } from "../enums/state";
 
 /**
  * @description A function to verify a number is in the Colour range.
@@ -206,24 +206,19 @@ export const setEventSelfSwitch = (
 };
 /**
  * A function wrapper on $gameScreen.changeWeather.
- * @param {DdmWeatherState} type - the weather state to set to.
+ * @param {WEATHER_STATE} type - the weather state to set to.
  * @param {number} power - the strength of the effect of weather.
- * @param {number} frames - the number of frames it lasts for.
+ * @param {number} frames - the number of frames it takes for the weather to be in full effect.
  */
 export const setWeatherState = (
-  type: DdmWeatherState,
+  type: WEATHER_STATE,
   power: number,
   frames: number
 ) => {
   const FRAMES = frames > 0 ? frames : 1;
   const POWER = power > 9 ? 9 : power > 0 ? power : 1;
-  if ($gameScreen) $gameScreen.changeWeather(type, POWER, FRAMES);
-};
-/**
- * A function that stops the current weather effect.
- */
-export const stopWeather = () => {
-  if ($gameScreen) $gameScreen.changeWeather("none", 0, 1);
+  if ($gameScreen)
+    $gameScreen.changeWeather(type.toLocaleLowerCase(), POWER, FRAMES);
 };
 /**
  * @description A function wrapper on $gameScreen.startTint, also verifies the values.
@@ -231,8 +226,7 @@ export const stopWeather = () => {
  * @param {number} green - the green number value of the colour.
  * @param {number} blue - the blue number value of the colour.
  * @param {number} greysScale - the grey scale value of the colour.
- * @param {number} frames - the number of frames the screen tint lasts for.
- * Aprox 60 frames per second unless modified.
+ * @param {number} frames - the number of frames till the tint is in full effect.
  */
 export const setScreenTint = (
   red: number,
