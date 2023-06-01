@@ -45,14 +45,6 @@ export type DdmStoredPersistKeys = LitteralUnion<
   (typeof PersistStoredKeys)[number]
 >;
 
-export const NodeTypeGuard = [
-  "mapEvent",
-  "switch",
-  "variable",
-  "custom",
-] as const;
-export type DdmNodeGuardType = LitteralUnion<(typeof NodeTypeGuard)[number]>;
-
 const NodeStorageKeys = ["nodeEvents", "nodeTracked"] as const;
 type DdmNodeStorageKeys = LitteralUnion<(typeof NodeStorageKeys)[number]>;
 
@@ -69,3 +61,19 @@ export type DdmDataStorageKeys = {
 } & {
   [key: string]: readonly string[];
 };
+
+// ===================================================
+//                  NODE TYPE GUARDS
+
+export const NodeTypeGuard = [
+  "mapEvent",
+  "switch",
+  "variable",
+  "custom",
+] as const;
+export type DdmNodeGuardType = LitteralUnion<(typeof NodeTypeGuard)[number]>;
+
+export const NodeEventTypeGuard = ["selfSwitch", "tint", "weather"] as const;
+export type DdmNodeEventTypeGuard = LitteralUnion<
+  (typeof NodeEventTypeGuard)[number]
+>;

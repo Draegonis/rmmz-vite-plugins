@@ -3,9 +3,10 @@ import type {
   DdmStoredPersistKeys,
   DdmPluginKeys,
   DdmNodeGuardType,
+  DdmNodeEventTypeGuard,
 } from "../enums/keys";
 import type { DdmCalendarParam } from "../data/zod/NodeIndex";
-import type { DdmTintState } from "../enums/state";
+import type { TINT_STATE, WEATHER_STATE } from "../enums/state";
 
 // ===================================================
 //                  CORE
@@ -82,9 +83,32 @@ export interface DdmNodeBaseEvent {
 
 export interface DdmNodeMapEvent extends DdmNodeBaseEvent {
   type: "mapEvent" extends DdmNodeGuardType ? "mapEvent" : never;
-  eventMap: number;
-  eventId: number;
+  data: {
+    type: DdmNodeEventTypeGuard;
+  } & DdmAllMapEvents;
 }
+
+export interface DdmSelfSwitchEvent {
+  type: "selfSwitch" extends DdmNodeEventTypeGuard ? "selfSwitch" : never;
+  selfSW: [number, number, string, boolean];
+}
+
+export interface DdmTintEvent {
+  type: "tint" extends DdmNodeEventTypeGuard ? "tint" : never;
+  tint: TINT_STATE;
+}
+
+export interface DdmWeatherEvent {
+  type: "weather" extends DdmNodeEventTypeGuard ? "weather" : never;
+  weatherType: WEATHER_STATE;
+  power: number;
+  frames: number;
+}
+
+export type DdmAllMapEvents =
+  | DdmSelfSwitchEvent
+  | DdmTintEvent
+  | DdmWeatherEvent;
 
 export interface DdmNodeSwitchEvent extends DdmNodeBaseEvent {
   type: "switch" extends DdmNodeGuardType ? "switch" : never;

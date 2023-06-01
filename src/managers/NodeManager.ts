@@ -1,7 +1,11 @@
 import DdmNodeWorker from "../workers/node?worker";
 // Helpers
 import { isEmpty } from "ramda";
-import { setGameVariables } from "../helpers/gameFuncs";
+import {
+  setEventSelfSwitch,
+  setGameVariables,
+  setWeatherState,
+} from "../helpers/gameFuncs";
 import { v4 as uuidV4 } from "uuid";
 // Enums
 import { GAME_STATE, WINDOW_STATE } from "../enums/state";
@@ -16,17 +20,37 @@ import type {
   DdmNodeWorkerReturn,
   DdmNodeEventTracked,
   DdmNodeSaveData,
+  DdmAllMapEvents,
+  DdmSelfSwitchEvent,
+  DdmTintEvent,
+  DdmWeatherEvent,
+  DdmTintColours,
 } from "../types/ddmTypes";
 
 const isNodeMapEvent = (data: DdmNodeEvent): data is DdmNodeMapEvent => {
   return (data as DdmNodeMapEvent).type === "mapEvent";
 };
+
+const isSelfSwitchEvent = (
+  data: DdmAllMapEvents
+): data is DdmSelfSwitchEvent => {
+  return (data as DdmSelfSwitchEvent).type === "selfSwitch";
+};
+const isTintEvent = (data: DdmAllMapEvents): data is DdmTintEvent => {
+  return (data as DdmTintEvent).type === "tint";
+};
+const isWeatherEvent = (data: DdmAllMapEvents): data is DdmWeatherEvent => {
+  return (data as DdmWeatherEvent).type === "weather";
+};
+
 const isNodeSwitch = (data: DdmNodeEvent): data is DdmNodeSwitchEvent => {
   return (data as DdmNodeSwitchEvent).type === "switch";
 };
+
 const isNodeVariable = (data: DdmNodeEvent): data is DdmNodeVarEvent => {
   return (data as DdmNodeVarEvent).type === "variable";
 };
+
 const isNodeCustom = (data: DdmNodeEvent): data is DdmNodeCustomEvent => {
   return (data as DdmNodeCustomEvent).type === "custom";
 };
@@ -272,8 +296,21 @@ class DdmNodeManager {
    */
   async #executeEvent(toExecute: DdmNodeEvent) {
     if (isNodeMapEvent(toExecute)) {
-      const { eventId, eventMap } = toExecute;
-      console.log(eventId, eventMap);
+      const { data } = toExecute;
+      if (isSelfSwitchEvent(data)) {
+        const { selfSW } = data;
+        setEventSelfSwitch(...selfSW);
+        return;
+      }
+      if (isTintEvent(data)) {
+        const { tint } = data;
+        return;
+      }
+      if (isWeatherEvent(data)) {
+        const { weatherType, power, frames } = data;
+        setWeatherState(weatherType, power, frames);
+        return;
+      }
       return;
     }
     if (isNodeSwitch(toExecute)) {
