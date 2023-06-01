@@ -171,7 +171,6 @@ class DdmNodeManager {
   }
   /**
    * The method to add an event to the tick que.
-   * @param {number} toTick - the tick to schedule the event for.
    * @param {DdmNodeEvent} eventObj - the event object with id, type and function to call.
    */
   scheduleEvent(eventObj: DdmNodeEvent) {
@@ -206,7 +205,7 @@ class DdmNodeManager {
 
       this.#workInProgress = false;
       this.#setEventData(newEvents, newTracked);
-      if (eventsToFire) this.#onWorkFinished(eventsToFire);
+      if (!isEmpty(eventsToFire)) this.#onWorkFinished(eventsToFire);
     };
   }
   /**

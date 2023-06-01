@@ -60,7 +60,7 @@ export type DdmNodeWorkerMessage = { data: DdmNodeEvent[] };
 
 export type DdmNodeWorkerReturn = {
   data: {
-    eventsToFire: DdmNodeEvent[] | undefined;
+    eventsToFire: DdmNodeEvent[];
     newEvents: DdmNodeEvent[];
     newTracked: Record<string, number>;
   };
@@ -140,22 +140,29 @@ export type DdmInitApi = DdmEnforceKeysOfSameType<
 // ===================================================
 //                   PARAMS
 
-export interface DdmCoreParams {
+export type DdmCoreParams = {
   type: "Core";
   PM: string; // boolean
   NM: string; // boolean
-}
+} & {
+  [key: string]: any;
+};
 
-export interface DdmPersistParams {
+export type DdmPersistParams = {
   type: "PM";
   refresh: string; // boolean
-}
+} & {
+  [key: string]: any;
+};
 
-export interface DdmNodeParams {
+export type DdmNodeParams = {
   type: "NM";
   calendar: string; // Ddmcalendar
   secondsPerTick: string; // number
-}
+  calendar: string; // Ddmcalendar
+} & {
+  [key: string]: any;
+};
 
 export type DdmAllParams = DdmCoreParams | DdmNodeParams | DdmPersistParams;
 

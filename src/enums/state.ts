@@ -27,8 +27,9 @@ export enum WEATHER_STATE {
 }
 
 export enum TINT_STATE {
-  "NORMAL" = "NORMAL",
   "DAWN" = "DAWN",
+  "NORMAL" = "NORMAL",
   "CLOUDY" = "CLOUDY",
+  "DUSK" = "DUSK",
   "NIGHT" = "NIGHT",
 }
