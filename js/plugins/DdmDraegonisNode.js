@@ -27,6 +27,7 @@
  *
  * @param tints
  * @text Day Tints
+ * @parent settings
  *
  * @param dawn
  * @text Dawn
@@ -52,9 +53,6 @@
  * @text Night
  * @type struct<TintColour>
  * @parent tints
- *
- * @param dev
- * @text Developer Options
  *
  * @command sceduleEvent
  * @text Schedule Event

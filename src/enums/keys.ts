@@ -28,7 +28,11 @@ export enum WEATHER_SUB_KEYS {
 }
 
 export enum WINDOW_SUB_KEYS {
-  NODETICK = "NODETICK",
+  "NODETICK" = "NODETICK",
+}
+
+export enum TINT_SUB_KEYS {
+  "CUSTOM" = "CUSTOM",
 }
 
 // ===================================================

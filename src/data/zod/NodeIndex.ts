@@ -10,3 +10,11 @@ export const calendarSchema = zObj({
   days: zStringArray,
 });
 export type DdmCalendarParam = zInfer<typeof calendarSchema>;
+
+export const tintColourSchema = zObj({
+  red: zNum(),
+  green: zNum(),
+  blue: zNum(),
+  greyScale: zNum(),
+});
+export type DdmTintColourParam = zInfer<typeof tintColourSchema>;

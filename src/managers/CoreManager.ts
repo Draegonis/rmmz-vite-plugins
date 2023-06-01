@@ -5,10 +5,16 @@ import { DdmStateManager } from "./Core/StateManager";
 import {
   DdmPluginKeys,
   GAMESTATE_SUB_KEYS,
+  TINT_SUB_KEYS,
   WEATHER_SUB_KEYS,
   WINDOW_SUB_KEYS,
 } from "../enums/keys";
-import { GAME_STATE, WEATHER_STATE, WINDOW_STATE } from "../enums/state";
+import {
+  GAME_STATE,
+  TINT_STATE,
+  WEATHER_STATE,
+  WINDOW_STATE,
+} from "../enums/state";
 // Types
 import type { DdmPluginsEnabled } from "../types/ddmTypes";
 
@@ -28,6 +34,7 @@ class CoreManager implements DdmPluginsEnabled {
    */
   GameState: DdmStateManager<GAME_STATE, typeof GAMESTATE_SUB_KEYS>;
   WeatherState: DdmStateManager<WEATHER_STATE, typeof WEATHER_SUB_KEYS>;
+  TintState: DdmStateManager<TINT_STATE, typeof TINT_SUB_KEYS>;
   WindowState: DdmStateManager<WINDOW_STATE, typeof WINDOW_SUB_KEYS>;
 
   constructor() {
@@ -40,6 +47,11 @@ class CoreManager implements DdmPluginsEnabled {
       WEATHER_STATE,
       typeof WEATHER_SUB_KEYS
     >(WEATHER_STATE.NONE, WEATHER_SUB_KEYS);
+
+    this.TintState = new DdmStateManager<TINT_STATE, typeof TINT_SUB_KEYS>(
+      TINT_STATE.NORMAL,
+      TINT_SUB_KEYS
+    );
 
     this.WindowState = new DdmStateManager<
       WINDOW_STATE,

@@ -1,5 +1,9 @@
 import { DataStorageKeys, NodeTypeGuard, PluginKeys } from "../../enums/keys";
-import { calendarSchema } from "../../data/zod/NodeIndex";
+import {
+  DdmTintColourParam,
+  calendarSchema,
+  tintColourSchema,
+} from "../../data/zod/NodeIndex";
 // Storage
 import { TITLE } from "../../game";
 import { set, get } from "idb-keyval";
@@ -52,6 +56,29 @@ const parseCalendar = (target: string): DdmCalendar | undefined => {
     totalMonths: newCalendar.months.length - 1,
     totalDays: newCalendar.days.length - 1,
   };
+};
+/**
+ *
+ */
+const TintParsers = {
+  red: convertToNumber,
+  green: convertToNumber,
+  blue: convertToNumber,
+  greyScale: convertToNumber,
+};
+/**
+ *
+ * @param target
+ * @returns {DdmTintColourParam | undefined}
+ */
+const parseTintColor = (target: string): DdmTintColourParam | undefined => {
+  const newColour = tintColourSchema.parse(
+    parseStructSchema(target, TintParsers)
+  );
+
+  if (!newColour) return undefined;
+
+  return newColour;
 };
 /**
  * A collection of functions needed to parse a string into DdmNodeEvent object.
@@ -142,8 +169,10 @@ class CoreDataManager {
       DdmApi.NM.scheduleEvent(data as DdmNodeEvent);
     }
   }
-  toTint(tintStruct: string) {
-    //
+  toTint(tintStruct: string): DdmTintColourParam | undefined {
+    if (!DdmApi.Core.NM) return;
+    const data = parseTintColor(tintStruct);
+    if (data) return data;
   }
   // ===================================================
   //                 Data Storage

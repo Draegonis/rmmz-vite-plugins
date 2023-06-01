@@ -96,6 +96,7 @@ export interface DdmSelfSwitchEvent {
 export interface DdmTintEvent {
   type: "tint" extends DdmNodeEventTypeGuard ? "tint" : never;
   tint: TINT_STATE;
+  frames: number;
 }
 
 export interface DdmWeatherEvent {
@@ -148,7 +149,7 @@ export interface DdmCalendar extends DdmCalendarParam {
 }
 
 // Tint Colours
-export type DdmTintColours = DdmEnforceKeysOfSameType<
+export type DdmDayTints = DdmEnforceKeysOfSameType<
   TINT_STATE,
   [number, number, number, number]
 >;

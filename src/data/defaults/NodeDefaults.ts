@@ -1,4 +1,4 @@
-import type { DdmCalendar, DdmTintColours } from "../../types/ddmTypes";
+import type { DdmCalendar, DdmDayTints } from "../../types/ddmTypes";
 
 export const CALENDAR: Readonly<DdmCalendar> = {
   year: 0,
@@ -30,7 +30,10 @@ export const CALENDAR: Readonly<DdmCalendar> = {
   totalDays: 7,
 };
 
-export const TINT_COLOURS: Readonly<DdmTintColours> = {
+export const TINT_COLOURS: Readonly<DdmDayTints> &
+  Readonly<{
+    [key: string]: [number, number, number, number];
+  }> = {
   DAWN: [0, 0, 0, 0],
   NORMAL: [0, 0, 0, 0],
   CLOUDY: [0, 0, 0, 0],

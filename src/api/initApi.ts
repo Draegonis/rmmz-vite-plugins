@@ -12,6 +12,7 @@ import type {
   DdmInitApi,
   DdmNodeParams,
   DdmAllParams,
+  DdmDayTints,
 } from "../types/ddmTypes";
 import { CALENDAR, TINT_COLOURS } from "../data/defaults/NodeDefaults";
 
@@ -89,18 +90,26 @@ const initApi: DdmInitApi = {
     if (isNodeParams(params)) {
       const { secondsPerTick, calendar } = params;
 
-      const tintColours = Object.keys(TINT_STATE).map((key) => {
+      const tintColours: { [key: string]: [number, number, number, number] } =
+        {};
+
+      Object.keys(TINT_STATE).forEach((key) => {
         const tint = params[key.toLowerCase()];
-        console.log(tint);
         if (tint) {
-          return DdmApi.Core.Data.toTint(tint);
+          const colours = DdmApi.Core.Data.toTint(tint);
+          if (colours) {
+            const { red, green, blue, greyScale } = colours;
+            tintColours[key] = [red, green, blue, greyScale];
+          } else {
+            tintColours[key] = TINT_COLOURS[key];
+          }
         }
       });
 
       DdmApi.NM = new DdmNodeManager(
         DdmApi.Core.Data.toNumber(secondsPerTick),
         DdmApi.Core.Data.toCalendar(calendar) || CALENDAR,
-        TINT_COLOURS
+        tintColours as DdmDayTints
       );
 
       DdmApi.Core.GameState.subscribe(GAMESTATE_SUB_KEYS.NODETICK, (state) => {

@@ -4,6 +4,7 @@ import { isEmpty } from "ramda";
 import {
   setEventSelfSwitch,
   setGameVariables,
+  setScreenTint,
   setWeatherState,
 } from "../helpers/gameFuncs";
 import { v4 as uuidV4 } from "uuid";
@@ -24,7 +25,7 @@ import type {
   DdmSelfSwitchEvent,
   DdmTintEvent,
   DdmWeatherEvent,
-  DdmTintColours,
+  DdmDayTints,
 } from "../types/ddmTypes";
 
 const isNodeMapEvent = (data: DdmNodeEvent): data is DdmNodeMapEvent => {
@@ -90,16 +91,16 @@ class DdmNodeManager {
   // #currentWeek = 1;
   // #currentMonth = 1;
 
-  // #tintColours: DdmTintColours;
+  #tintColours: DdmDayTints;
 
   constructor(
     secondsPerTick: number,
     _calendar: DdmCalendar,
-    _tintColours: DdmTintColours
+    tintColours: DdmDayTints
   ) {
     this.#secondsPerTick = secondsPerTick;
     // this.#calendar = calendar;
-    // this.#tintColours = tintColours
+    this.#tintColours = tintColours;
     this.#worker = undefined;
   }
 
@@ -148,7 +149,6 @@ class DdmNodeManager {
    * A method to pause the tick when the window state changes.
    */
   windowTickState(windowState: WINDOW_STATE) {
-    console.log(windowState);
     if (!this.#autoTick) return;
     switch (windowState) {
       case "FOCUS":
@@ -306,32 +306,30 @@ class DdmNodeManager {
       const { data } = toExecute;
       if (isSelfSwitchEvent(data)) {
         const { selfSW } = data;
+
         setEventSelfSwitch(...selfSW);
-        return;
-      }
-      if (isTintEvent(data)) {
-        const { tint } = data;
-        return;
-      }
-      if (isWeatherEvent(data)) {
+      } else if (isTintEvent(data)) {
+        const { tint, frames } = data;
+        const colour = this.#tintColours[tint];
+
+        DdmApi.Core.TintState.current = tint;
+        setScreenTint(...colour, frames);
+      } else if (isWeatherEvent(data)) {
         const { weatherType, power, frames } = data;
+
+        DdmApi.Core.WeatherState.current = weatherType;
         setWeatherState(weatherType, power, frames);
-        return;
       }
-      return;
-    }
-    if (isNodeSwitch(toExecute)) {
+    } else if (isNodeSwitch(toExecute)) {
       const { switchId, newValue } = toExecute;
+
       setGameVariables.switch(switchId, newValue);
-      return;
-    }
-    if (isNodeVariable(toExecute)) {
+    } else if (isNodeVariable(toExecute)) {
       const { variableId, newValue } = toExecute;
+
       setGameVariables.var(variableId, newValue);
-      return;
-    }
-    if (isNodeCustom(toExecute)) {
-      return;
+    } else if (isNodeCustom(toExecute)) {
+      //
     }
   }
   /**
