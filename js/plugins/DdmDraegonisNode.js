@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------------
 /*:
- * @plugindesc 0.10 Ddm Draegonis Rmmz Vite Plugins Node Manager Script.
+ * @plugindesc 0.30 Ddm Draegonis Rmmz Vite Plugins Node Manager Script.
  * @target MZ
  * @url
  * @author Ddm Draegonis
@@ -90,7 +90,7 @@
  *
  */
 var Imported = Imported || {};
-Imported.DdmDraegonisNode = 0.1;
+Imported.DdmDraegonisNode = 0.3;
 
 if (!Imported.DdmDraegonisCore)
   throw new Error(

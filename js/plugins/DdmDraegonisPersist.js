@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------------
 /*:
- * @plugindesc 0.10 Ddm Draegonis Rmmz Vite Plugins Persist Manager Script.
+ * @plugindesc 0.30 Ddm Draegonis Rmmz Vite Plugins Persist Manager Script.
  * @target MZ
  * @url
  * @author Ddm Draegonis
@@ -29,7 +29,7 @@
  * Released under the MIT License.
  */
 var Imported = Imported || {};
-Imported.DdmDraegonisPersist = 0.1;
+Imported.DdmDraegonisPersist = 0.3;
 
 if (!Imported.DdmDraegonisCore)
   throw new Error(

@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------------
 /*:
- * @plugindesc 0.10 Core script to enable Ddm Draegonis Rmmz Vite Plugins.
+ * @plugindesc 0.30 Core script to enable Ddm Draegonis Rmmz Vite Plugins.
  * @target MZ
  * @url
  * @author Ddm Draegonis
@@ -56,7 +56,7 @@
  * Released under the MIT License.
  */
 var Imported = Imported || {};
-Imported.DdmDraegonisCore = 0.1;
+Imported.DdmDraegonisCore = 0.3;
 
 DdmApi.rmmzInit = true;
 DdmApi.init.Core({
