@@ -56,8 +56,8 @@ const verifySelfSwitch = (
   const swId = switchId.toUpperCase();
   return (
     $gameSelfSwitches &&
-    mapId > 1 &&
-    eventId > 1 &&
+    mapId > 0 &&
+    eventId > 0 &&
     $gameSelfSwitches.value([mapId, eventId, swId])
   );
 };
