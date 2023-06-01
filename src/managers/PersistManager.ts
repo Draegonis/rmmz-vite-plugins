@@ -34,16 +34,39 @@ enableMapSet(); // So immer can use map and sets in zustand store.
 const initPersist: DdmPersistState = {
   isInit: false,
   currentId: "",
-  stored: {
-    stash: new Map([]),
-    switch: new Map([]),
-    var: new Map([]),
-    custom: new Map([]),
-  },
+  stored: undefined,
 };
 
 // ===================================================
 //                    HELPERS
+
+const convertToMap = (
+  state: DdmPersistState,
+  key: keyof DdmPersistState,
+  target: string | undefined
+): Map<unknown, unknown> | undefined => {
+  if (target && state[key] && state[key][target]) {
+    return new Map(state[key][target]);
+  }
+  if (!target && state[key]) {
+    return new Map(state[key]);
+  }
+  return undefined;
+};
+
+const convertFromMap = (
+  state: DdmPersistState,
+  key: keyof DdmPersistState,
+  target: string | undefined
+): any[] | undefined => {
+  if (target && state[key] && state[key][target]) {
+    return Array.from(state[key][target].entries());
+  }
+  if (!target && state[key]) {
+    return Array.from(state[key].entries());
+  }
+  return undefined;
+};
 
 /**
  * A function that updates specific parts of state.stored in the database.
@@ -55,31 +78,40 @@ const storeSingle = (
   stored: Draft<DdmAllPersistStore["stored"]>
 ) => {
   const setSwitches = () => {
-    for (const id of stored.switch.keys()) {
-      const newValue = getGameVariables.switch(id);
-      if (newValue) stored.switch.set(id, newValue);
+    if (stored && stored.switch) {
+      for (const id of stored.switch.keys()) {
+        const newValue = getGameVariables.switch(id);
+        if (newValue) stored.switch.set(id, newValue);
+      }
     }
   };
   const setVariables = () => {
-    for (const id of stored.var.keys()) {
-      const newValue = getGameVariables.var(id);
-      if (newValue) stored.var.set(id, newValue);
+    if (stored && stored.var) {
+      for (const id of stored.var.keys()) {
+        const newValue = getGameVariables.var(id);
+        if (newValue) stored.var.set(id, newValue);
+      }
     }
   };
 
   switch (key) {
     case "custom":
-      for (const id of stored.custom.keys()) {
-        stored.custom.set(id, DdmApi.PM.custom[id]);
+      if (stored && stored.custom) {
+        for (const id of stored.custom.keys()) {
+          stored.custom.set(id, DdmApi.PM.custom[id]);
+        }
       }
+
       break;
     case "stash":
       for (const [key, value] of DdmApi.PM.stash) {
-        if (value === 0) {
-          stored.stash.delete(key);
-          DdmApi.PM.stash.delete(key);
-        } else {
-          stored.stash.set(key, value);
+        if (stored && stored.stash) {
+          if (value === 0) {
+            stored.stash.delete(key);
+            DdmApi.PM.stash.delete(key);
+          } else {
+            stored.stash.set(key, value);
+          }
         }
       }
       break;
@@ -137,12 +169,9 @@ const persistStore = create<DdmAllPersistStore>()(
           if (refresh) exitInit = false;
           if (exitInit) return;
 
-          const StoreIndex = await fetchJsonSchema<DdmPersistIndexSchema>(
-            persistJsonPath,
-            persistIndexSchema
-          );
-
-          if (!StoreIndex) return;
+          const StoreIndex = await fetchJsonSchema<
+            DdmPersistIndexSchema & { [key: string]: any }
+          >(persistJsonPath, persistIndexSchema);
 
           set((state) => {
             Object.entries(initPersist).forEach(([key, value]) => {
@@ -151,21 +180,22 @@ const persistStore = create<DdmAllPersistStore>()(
 
             state.currentId = uuidV4();
 
-            StoreIndex.stash.forEach(([key, qnty]) => {
-              state.stored.stash.set(key, qnty);
-            });
+            if (!StoreIndex) return;
 
-            StoreIndex.custom.forEach((key) => {
-              state.stored.custom.set(key, null);
-              DdmApi.PM.custom[key] = null;
-            });
+            const { stash, custom, switch: gameSW, var: gameVar } = StoreIndex;
+            if (stash || custom || gameSW || gameVar) state.stored = {};
 
-            StoreIndex.switch.forEach((key) => {
-              state.stored.switch.set(key, null);
-            });
-
-            StoreIndex.var.forEach((key) => {
-              state.stored.var.set(key, null);
+            Object.keys(StoreIndex).forEach((key) => {
+              if (StoreIndex[key]) {
+                state.stored![key] = new Map([]);
+                StoreIndex[key].forEach((entry: any) => {
+                  if (!Array.isArray(entry)) {
+                    state.stored![key].set(entry, null);
+                  } else {
+                    state.stored![key].set(...entry);
+                  }
+                });
+              }
             });
 
             state.isInit = true;
@@ -180,25 +210,31 @@ const persistStore = create<DdmAllPersistStore>()(
         fetchEntireStore(storeId: string) {
           const { currentId, stored } = get();
 
-          if (currentId !== storeId) {
-            stored.switch.forEach((value, key) => {
+          if (currentId !== storeId && stored) {
+            stored.switch?.forEach((value, key) => {
               if (value !== null) setGameVariables.switch(key, value);
             });
 
-            stored.var.forEach((value, key) => {
+            stored.var?.forEach((value, key) => {
               setGameVariables.var(key, value);
             });
           }
 
-          return { custom: stored.custom, stash: stored.stash };
+          return {
+            custom: stored ? stored?.custom : undefined,
+            stash: stored ? stored?.stash : undefined,
+          };
         },
         /**
          * Loads the custom object into DdmApi.PM.custom so it should be able to be used in the title screen.
          * @returns {Map<string, any>} - the map object loaded from storage containing the object key and value.
          */
-        fetchCustomOnly(): Map<string, any> {
-          const custom = get().stored.custom;
-          return custom;
+        fetchCustomOnly(): Map<string, any> | undefined {
+          const state = get();
+          if (state.stored && state.stored.custom) {
+            return state.stored.custom;
+          }
+          return undefined;
         },
         /**
          * Updates the data in the localStorage.
@@ -240,30 +276,41 @@ const persistStore = create<DdmAllPersistStore>()(
             const decompressed = decompressSync(str);
             const restored = strFromU8(decompressed);
             const storeState = JSON.parse(restored) as DdmPersistState;
+            let stored = undefined;
+            if (storeState.stored) {
+              stored = {
+                stash: convertToMap(storeState, "stored", "stash"),
+                switch: convertToMap(storeState, "stored", "switch"),
+                var: convertToMap(storeState, "stored", "var"),
+                custom: convertToMap(storeState, "stored", "custom"),
+              };
+            }
+
             return {
               state: {
                 ...storeState,
-                stored: {
-                  stash: new Map(storeState.stored.stash),
-                  switch: new Map(storeState.stored.switch),
-                  var: new Map(storeState.stored.var),
-                  custom: new Map(storeState.stored.custom),
-                },
+                stored,
               },
             };
           },
           setItem: async (name, newValue) => {
+            const storeData = newValue.state as unknown as DdmPersistState;
+            let stored = undefined;
+
+            if (storeData.stored) {
+              stored = {
+                stash: convertFromMap(storeData, "stored", "stash"),
+                switch: convertFromMap(storeData, "stored", "switch"),
+                var: convertFromMap(storeData, "stored", "var"),
+                custom: convertFromMap(storeData, "stored", "custom"),
+              };
+            }
+
             const str = JSON.stringify({
-              state: {
-                ...newValue.state,
-                stored: {
-                  stash: Array.from(newValue.state.stored.stash.entries()),
-                  switch: Array.from(newValue.state.stored.switch.entries()),
-                  var: Array.from(newValue.state.stored.var.entries()),
-                  custom: Array.from(newValue.state.stored.custom.entries()),
-                },
-              },
+              ...storeData,
+              stored,
             });
+
             const buffer = strToU8(str);
             const compressed = compressSync(buffer);
             await set(name, compressed);
@@ -317,13 +364,13 @@ class PersistManager {
   async onStart(refresh: boolean) {
     await this.#initStore(refresh);
     const custom = this.#fetchCustom();
-    this.#setCustom(custom);
+    if (custom) this.#setCustom(custom);
   }
 
   onLoad({ persistUUID }: DdmPersistSaveData) {
     const { custom, stash } = this.#fetchStore(persistUUID);
-    this.#setCustom(custom);
-    this.#setStash(stash);
+    if (custom) this.#setCustom(custom);
+    if (stash) this.#setStash(stash);
   }
 
   onSave(): DdmPersistSaveData {

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { object as zObj, infer as zInfer } from "zod";
 import { zNumberArray, zArrayNumberNumber, zStringArray } from "./zodIndex";
 
 // ===================================================
@@ -7,10 +7,10 @@ import { zNumberArray, zArrayNumberNumber, zStringArray } from "./zodIndex";
 /**
  * The zod schema used to parse DdmDraegonisPersist.json.
  */
-export const persistIndexSchema = z.object({
-  stash: zArrayNumberNumber,
-  switch: zNumberArray,
-  var: zNumberArray,
-  custom: zStringArray,
-});
-export type DdmPersistIndexSchema = z.infer<typeof persistIndexSchema>;
+export const persistIndexSchema = zObj({
+  stash: zArrayNumberNumber.optional(),
+  switch: zNumberArray.optional(),
+  var: zNumberArray.optional(),
+  custom: zStringArray.optional(),
+}).optional();
+export type DdmPersistIndexSchema = zInfer<typeof persistIndexSchema>;

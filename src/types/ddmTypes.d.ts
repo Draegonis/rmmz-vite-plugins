@@ -25,11 +25,13 @@ export type DdmPersistSaveData = {
 export type DdmPersistState = {
   isInit: boolean;
   currentId: string;
-  stored: {
-    stash: Map<number, number>;
-    switch: Map<number, boolean | null>;
-    var: Map<number, any | null>;
-    custom: Map<string, any | null>;
+  stored?: {
+    stash?: Map<number, number>;
+    switch?: Map<number, boolean | null>;
+    var?: Map<number, any | null>;
+    custom?: Map<string, any | null>;
+  } & {
+    [key: string]: any;
   };
 } & {
   [key: string]: any;
@@ -38,10 +40,10 @@ export type DdmPersistState = {
 export type DdmPersistActions = {
   initStore: (refresh: boolean) => Promise<void>;
   fetchEntireStore: (storeId: string) => {
-    custom: Map<string, any>;
-    stash: Map<number, number>;
+    custom: Map<string, any> | undefined;
+    stash: Map<number, number> | undefined;
   };
-  fetchCustomOnly: () => Map<string, any>;
+  fetchCustomOnly: () => Map<string, any> | undefined;
   updateStore: () => string;
   updateSingle: (key: DdmStoredPersistKeys) => void;
 };
