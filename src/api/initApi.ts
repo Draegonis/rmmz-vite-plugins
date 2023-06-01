@@ -4,6 +4,7 @@ import { DdmCoreManager } from "../managers/CoreManager";
 import { DdmNodeManager } from "../managers/NodeManager";
 // Enums
 import { GAMESTATE_SUB_KEYS, PluginKeys, WINDOW_SUB_KEYS } from "../enums/keys";
+import { TINT_STATE } from "../enums/state";
 // Types
 import type {
   DdmCoreParams,
@@ -12,7 +13,7 @@ import type {
   DdmNodeParams,
   DdmAllParams,
 } from "../types/ddmTypes";
-import { CALENDAR } from "../data/defaults/NodeDefaults";
+import { CALENDAR, TINT_COLOURS } from "../data/defaults/NodeDefaults";
 
 // ===================================================
 //                    INITAPI
@@ -86,11 +87,20 @@ const initApi: DdmInitApi = {
     DdmApi.NM = DdmApi.NM || {};
 
     if (isNodeParams(params)) {
-      const { calendar, secondsPerTick } = params;
+      const { secondsPerTick, calendar } = params;
+
+      const tintColours = Object.keys(TINT_STATE).map((key) => {
+        const tint = params[key.toLowerCase()];
+        console.log(tint);
+        if (tint) {
+          return DdmApi.Core.Data.toTint(tint);
+        }
+      });
 
       DdmApi.NM = new DdmNodeManager(
+        DdmApi.Core.Data.toNumber(secondsPerTick),
         DdmApi.Core.Data.toCalendar(calendar) || CALENDAR,
-        DdmApi.Core.Data.toNumber(secondsPerTick)
+        TINT_COLOURS
       );
 
       DdmApi.Core.GameState.subscribe(GAMESTATE_SUB_KEYS.NODETICK, (state) => {

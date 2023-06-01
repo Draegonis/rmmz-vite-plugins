@@ -149,11 +149,9 @@ export interface DdmCalendar extends DdmCalendarParam {
 
 // Tint Colours
 export type DdmTintColours = DdmEnforceKeysOfSameType<
-  DdmTintState,
+  TINT_STATE,
   [number, number, number, number]
-> & {
-  custom: { [key: string]: [number, number, number, number] };
-};
+>;
 
 // ===================================================
 //                  INIT API
@@ -183,9 +181,13 @@ export type DdmPersistParams = {
 
 export type DdmNodeParams = {
   type: "NM";
-  calendar: string; // Ddmcalendar
   secondsPerTick: string; // number
   calendar: string; // Ddmcalendar
+  dawn: string; //  start TintColours
+  normal: string; //
+  dusk: string; //
+  cloudy: string; //
+  night: string; //  end TintColours
 } & {
   [key: string]: any;
 };

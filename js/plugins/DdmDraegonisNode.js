@@ -11,18 +11,47 @@
  * @param settings
  * @text Settings
  *
- * @param calendar
- * @text Calendar
- * @desc The structure of the calendar to be used in the game.
- * @type struct<Calendar>
- * @parent settings
- *
  * @param secondsPerTick
  * @text Seconds Per Game Tick
  * @desc The amount of seconds until the node manager increments the game tick.
  * @type number
  * @default 60
  * @min 10
+ * @parent settings
+ *
+ * @param calendar
+ * @text Calendar
+ * @desc The structure of the calendar to be used in the game.
+ * @type struct<Calendar>
+ * @parent settings
+ *
+ * @param tints
+ * @text Day Tints
+ *
+ * @param dawn
+ * @text Dawn
+ * @type struct<TintColour>
+ * @parent tints
+ *
+ * @param normal
+ * @text Normal
+ * @type struct<TintColour>
+ * @parent tints
+ *
+ * @param dusk
+ * @text Dusk
+ * @type struct<TintColour>
+ * @parent tints
+ *
+ * @param cloudy
+ * @text Cloudy
+ * @type struct<TintColour>
+ * @parent tints
+ *
+ * @param night
+ * @text Night
+ * @type struct<TintColour>
+ * @parent tints
  *
  * @param dev
  * @text Developer Options
@@ -87,6 +116,37 @@
  * @type number
  * @default 1
  * @min 1
+ *
+ */
+/*~struct~TintColour:
+ *
+ * @param red
+ * @text Red
+ * @type number
+ * @default 0
+ * @min -255
+ * @max 255
+ *
+ * @param green
+ * @text Green
+ * @type number
+ * @default 0
+ * @min -255
+ * @max 255
+ *
+ * @param blue
+ * @text Blue
+ * @type number
+ * @default 0
+ * @min -255
+ * @max 255
+ *
+ * @param greyScale
+ * @text Grey Scale
+ * @type number
+ * @default 0
+ * @min 0
+ * @max 255
  *
  */
 var Imported = Imported || {};

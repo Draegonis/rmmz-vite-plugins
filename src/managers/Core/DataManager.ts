@@ -142,6 +142,9 @@ class CoreDataManager {
       DdmApi.NM.scheduleEvent(data as DdmNodeEvent);
     }
   }
+  toTint(tintStruct: string) {
+    //
+  }
   // ===================================================
   //                 Data Storage
 

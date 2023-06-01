@@ -90,9 +90,16 @@ class DdmNodeManager {
   // #currentWeek = 1;
   // #currentMonth = 1;
 
-  constructor(_calendar: DdmCalendar, secondsPerTick: number) {
+  // #tintColours: DdmTintColours;
+
+  constructor(
+    secondsPerTick: number,
+    _calendar: DdmCalendar,
+    _tintColours: DdmTintColours
+  ) {
     this.#secondsPerTick = secondsPerTick;
     // this.#calendar = calendar;
+    // this.#tintColours = tintColours
     this.#worker = undefined;
   }
 
