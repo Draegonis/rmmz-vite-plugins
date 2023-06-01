@@ -4,14 +4,6 @@ A set of Rpg Maker MZ plugins that are bundled by vite js and uses
 smaller Plugins for params and commands with some small aliases to
 Rpg maker functions.
 
-Inclded a yarn lock because it's my choice of package management.
-The main commands are:
--> yarn run dev - to start the dev server and open the browser.
--> yarn run build - to build the scripts into the dist folder.
--> yarn run license - to generate a third-party-licenses.txt file.
-
-You can try using yarn run preview but I haven't tested it.
-
 Notes:
 
 - if you have a mz project in this folder and you use the
@@ -23,3 +15,8 @@ Notes:
 - this project doesn't include the rmmz files but you can drop
   a project into this folder to be able to run the dev server
   for testing.
+
+If you have DdmDraegonisPersist.js enabled in your projects
+plugin manager you will need to have a DdmDraegonisPersist.json
+in your data folder. The information in that json is the initial
+setup of all the data to be persisted.
