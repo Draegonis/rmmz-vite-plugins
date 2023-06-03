@@ -1,4 +1,4 @@
-import { DataStorageKeys, NodeTypeGuard, PluginKeys } from "../../enums/keys";
+import { DataStorageKeys, DdmAllNodeType, PluginKeys } from "../../enums/keys";
 import {
   DdmTintColourParam,
   calendarSchema,
@@ -8,6 +8,8 @@ import {
 import { TITLE } from "../../game";
 import { set, get } from "idb-keyval";
 import { strToU8, strFromU8, compressSync, decompressSync } from "fflate";
+// Enums
+import { TINT_STATE, WEATHER_STATE } from "../../enums/state";
 // Helpers
 import { isEmpty } from "ramda";
 import { parseStructSchema } from "../../data/zod/zodHelpers";
@@ -17,14 +19,17 @@ import {
   convertToBoolean,
 } from "../../helpers/common";
 // Types
-import type { DdmNodeGuardType } from "../../enums/keys";
 import type {
   DdmCalendar,
-  DdmNodeEvent,
   DdmNodeSaveData,
   DdmParserFuncs,
   DdmPersistSaveData,
   DdmSaveData,
+  DdmSelfSwitchArgs,
+  DdmSwitchEventArgs,
+  DdmTintEventArgs,
+  DdmVariableEventArgs,
+  DdmWeatherEventArgs,
 } from "../../types/ddmTypes";
 
 // ===================================================
@@ -80,36 +85,6 @@ const parseTintColor = (target: string): DdmTintColourParam | undefined => {
 
   return newColour;
 };
-/**
- * A collection of functions needed to parse a string into DdmNodeEvent object.
- */
-const NodeEventParsers: DdmParserFuncs = {
-  tick: convertToNumber,
-  isTrackable: convertToBoolean,
-  eventId: convertToNumber,
-  eventMap: convertToNumber,
-  switchId: convertToNumber,
-  valriableId: convertToNumber,
-  newvalue: convertToNumber,
-};
-/**
- * The function to parse an incoming string into a DdmNodeEvent
- * @param {string} target - the string to parse.
- * @param {DdmNodeGuardType} type - a type guard string to be checked.
- * @returns {DdmNodeEvent | undefined} - a DdmNodeEvent if successful or undefined if not.
- */
-const parseNodeEvent = (
-  target: string,
-  type: DdmNodeGuardType
-): DdmNodeEvent | undefined => {
-  if (stringIsInEnum(type, NodeTypeGuard)) {
-    return parseStructSchema(
-      target,
-      NodeEventParsers
-    ) as unknown as DdmNodeEvent;
-  }
-  return undefined;
-};
 
 // ===================================================
 //                  MANAGER
@@ -162,17 +137,130 @@ class CoreDataManager {
    * @param {string} nodeStruct - the string to convert into a DdmNodeEvent.
    * @param {DdmNodeGuardType} type - the type string to guard against.
    */
-  toNodeEvent(nodeStruct: string, type: DdmNodeGuardType) {
-    if (!DdmApi.Core.NM) return;
-    const data = parseNodeEvent(nodeStruct, type);
-    if (data) {
-      DdmApi.NM.scheduleEvent(data as DdmNodeEvent);
-    }
-  }
   toTint(tintStruct: string): DdmTintColourParam | undefined {
     if (!DdmApi.Core.NM) return;
     const data = parseTintColor(tintStruct);
     if (data) return data;
+  }
+  #isTrackable(str: string): boolean | undefined {
+    return str === "" ? undefined : this.toBoolean(str);
+  }
+  async toSchedule(type: DdmAllNodeType, args: any) {
+    switch (type) {
+      case "switch": {
+        const { id, tick, isTrackable, switchId, newValue } =
+          args as DdmSwitchEventArgs;
+
+        DdmApi.NM.scheduleEvent({
+          type: "switch",
+          id,
+          tick: this.toNumber(tick),
+          switchId: this.toNumber(switchId),
+          newValue: this.toBoolean(newValue),
+          isTrackable: this.#isTrackable(isTrackable),
+        });
+
+        break;
+      }
+      case "variable": {
+        const {
+          id,
+          variableId,
+          tick,
+          isTrackable,
+          newNumber,
+          newNumberArray,
+          newString,
+          newStringArray,
+        } = args as DdmVariableEventArgs;
+        let newValue = undefined;
+
+        if (newNumber !== "") {
+          newValue = this.toNumber(newNumber);
+        } else if (newNumberArray !== "") {
+          const tempArray = JSON.parse(newNumberArray) as string[];
+          newValue = tempArray.map((str) => this.toNumber(str));
+        } else if (newString !== "") {
+          newValue = newString;
+        } else if (newStringArray !== "") {
+          newValue = JSON.parse(newStringArray) as string[];
+        }
+
+        DdmApi.NM.scheduleEvent({
+          type: "variable",
+          id,
+          tick: this.toNumber(tick),
+          variableId: this.toNumber(variableId),
+          isTrackable: this.#isTrackable(isTrackable),
+          newValue,
+        });
+
+        break;
+      }
+      case "selfSwitch": {
+        const { id, tick, isTrackable, mapID, eventID, switchID, newValue } =
+          args as DdmSelfSwitchArgs;
+
+        DdmApi.NM.scheduleEvent({
+          type: "mapEvent",
+          id,
+          tick: this.toNumber(tick),
+          isTrackable: this.#isTrackable(isTrackable),
+          data: {
+            type: "selfSwitch",
+            selfSW: [
+              this.toNumber(mapID),
+              this.toNumber(eventID),
+              switchID.toUpperCase(),
+              this.toBoolean(newValue),
+            ],
+          },
+        });
+
+        break;
+      }
+      case "tint": {
+        const { id, tick, isTrackable, tint, frames } =
+          args as DdmTintEventArgs;
+
+        DdmApi.NM.scheduleEvent({
+          type: "mapEvent",
+          id,
+          tick: this.toNumber(tick),
+          isTrackable: this.#isTrackable(isTrackable),
+          data: {
+            type: "tint",
+            tint: tint as TINT_STATE,
+            frames: this.toNumber(frames),
+          },
+        });
+
+        break;
+      }
+      case "weather": {
+        const { id, tick, isTrackable, weatherType, power, frames } =
+          args as DdmWeatherEventArgs;
+
+        DdmApi.NM.scheduleEvent({
+          type: "mapEvent",
+          id,
+          tick: this.toNumber(tick),
+          isTrackable: this.#isTrackable(isTrackable),
+          data: {
+            type: "weather",
+            weatherType: weatherType as WEATHER_STATE,
+            power: this.toNumber(power),
+            frames: this.toNumber(frames),
+          },
+        });
+
+        break;
+      }
+      case "custom":
+        break;
+      case "mapEvent":
+        break;
+    }
   }
   // ===================================================
   //                 Data Storage

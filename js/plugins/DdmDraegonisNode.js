@@ -54,15 +54,237 @@
  * @type struct<TintColour>
  * @parent tints
  *
- * @command sceduleEvent
- * @text Schedule Event
- * @desc Schedule an update to happen.
+ * @command switch_Event
+ * @text Switch Event
+ * @desc Schedule an update of a game switch.
  *
- * @arg text
- * @text Text
- * @type note
- * @default ""
- * @desc
+ * @arg id
+ * @text ID
+ * @type string
+ * @default "Unique ID"
+ * @desc The unique ID of the event.
+ *
+ * @arg tick
+ * @text Tick
+ * @type number
+ * @default 1
+ * @min 1
+ * @desc The amount of ticks before the event is executed.
+ *
+ * @arg isTrackable
+ * @text Is Trackable
+ * @type boolean
+ * @default false
+ * @desc Is the event trackable, added to an object that keeps record and all trackable events.
+ *
+ * @arg switchId
+ * @text Switch Id
+ * @type switch
+ * @default 1
+ * @min 1
+ * @desc The game switch to change the value of.
+ *
+ * @arg newValue
+ * @text New Value
+ * @type boolean
+ * @default false
+ * @desc The new value of the game switch.
+ *
+ * @command variable_Event
+ * @text Variable Event
+ * @desc Schedule an update of a game variable, it will go with the first new value given.
+ *
+ * @arg id
+ * @text ID
+ * @type string
+ * @default "Unique ID"
+ * @desc The unique ID of the event.
+ *
+ * @arg tick
+ * @text Tick
+ * @type number
+ * @default 1
+ * @min 1
+ * @desc The amount of ticks before the event is executed.
+ *
+ * @arg isTrackable
+ * @text Is Trackable
+ * @type boolean
+ * @default false
+ * @desc Is the event trackable, added to an object that keeps record and all trackable events.
+ *
+ * @arg variableId
+ * @text Variable Id
+ * @type variable
+ * @default 1
+ * @min 1
+ * @desc The game variable to change the value of.
+ *
+ * @arg newNumber
+ * @text New Number Value
+ * @type number
+ * @desc The new number value of the game valriable.
+ *
+ * @arg newNumberArray
+ * @text New Number Array
+ * @type number[]
+ * @desc The new number array value of the game variable.
+ *
+ * @arg newString
+ * @text New String
+ * @type string
+ * @desc The new string value of the game variable.
+ *
+ * @arg newStringArray
+ * @text New String Array
+ * @type string[]
+ * @desc The new string array value of the game variable.
+ *
+ * @command selfSW_Event
+ * @text Self Switch Event
+ * @desc Schedule an update of a self switch. Note: The self switch must already have been used.
+ *
+ * @arg id
+ * @text ID
+ * @type string
+ * @default "Unique ID"
+ * @desc The unique ID of the event.
+ *
+ * @arg tick
+ * @text Tick
+ * @type number
+ * @default 1
+ * @min 1
+ * @desc The amount of ticks before the event is executed.
+ *
+ * @arg isTrackable
+ * @text Is Trackable
+ * @type boolean
+ * @default false
+ * @desc Is the event trackable, added to an object that keeps record and all trackable events.
+ *
+ * @arg mapID
+ * @text Map ID
+ * @type number
+ * @default 1
+ * @min 1
+ * @desc The map ID where the event is located.
+ *
+ * @arg eventID
+ * @text Event ID
+ * @type number
+ * @default 1
+ * @min 1
+ * @desc The event ID to have their self switch modified.
+ *
+ * @arg switchID
+ * @text Switch ID
+ * @type string
+ * @default "A"
+ * @desc The switch ID letter to be changed.
+ *
+ * @command tint_Event
+ * @text Tint Event
+ * @desc Schedule a screen tint event.
+ *
+ * @arg id
+ * @text ID
+ * @type string
+ * @default "Unique ID"
+ * @desc The unique ID of the event.
+ *
+ * @arg tick
+ * @text Tick
+ * @type number
+ * @default 1
+ * @min 1
+ * @desc The amount of ticks before the event is executed.
+ *
+ * @arg isTrackable
+ * @text Is Trackable
+ * @type boolean
+ * @default false
+ * @desc Is the event trackable, added to an object that keeps record and all trackable events.
+ *
+ * @arg tint
+ * @text Event ID
+ * @type select
+ * @option dawn
+ * @value "DAWN"
+ * @option normal
+ * @value "NORMAL"
+ * @option cloudy
+ * @value "CLOUDY"
+ * @option dusk
+ * @value "DUSK"
+ * @option night
+ * @value "NIGHT"
+ * @default normal
+ * @desc A tint from the tint setting.
+ *
+ * @arg frames
+ * @text Frames
+ * @type number
+ * @default 1
+ * @min 1
+ * @desc The amount of frames it takes to switch to the tint.
+ *
+ * @command weather_Event
+ * @text Weather Event
+ * @desc Schedule a gameScreen changeWeather event.
+ *
+ * @arg id
+ * @text ID
+ * @type string
+ * @default "Unique ID"
+ * @desc The unique ID of the event.
+ *
+ * @arg tick
+ * @text Tick
+ * @type number
+ * @default 1
+ * @min 1
+ * @desc The amount of ticks before the event is executed.
+ *
+ * @arg isTrackable
+ * @text Is Trackable
+ * @type boolean
+ * @default false
+ * @desc Is the event trackable, added to an object that keeps record and all trackable events.
+ *
+ * @arg weatherType
+ * @text Weather Type
+ * @type select
+ * @option none
+ * @value "NONE"
+ * @option rain
+ * @value "RAIN"
+ * @option storm
+ * @value "STORM"
+ * @option snow
+ * @value "SNOW"
+ * @default none
+ * @desc The new weather state.
+ *
+ * @arg power
+ * @text Power
+ * @type number
+ * @default 1
+ * @min 1
+ * @desc The power of the weather normally 1-9.
+ *
+ * @arg frames
+ * @text Frames
+ * @type number
+ * @default 1
+ * @min 1
+ * @desc The amount of frames it takes for the weather to change.
+ *
+ * @arg newValue
+ * @text New Value
+ * @type boolean
+ * @default false
+ * @desc The new value of the self switch of map ID / event ID.
  *
  * @command start
  * @text Start Node Tick
@@ -160,8 +382,20 @@ DdmApi.init.NM({
   type: "NM",
 });
 
-PluginManager.registerCommand("DdmDraegonisNode", "sceduleEvent", (args) => {
-  //
+PluginManager.registerCommand("DdmDraegonisNode", "switch_Event", (args) => {
+  DdmApi.Core.Data.toSchedule("switch", args);
+});
+PluginManager.registerCommand("DdmDraegonisNode", "variable_Event", (args) => {
+  DdmApi.Core.Data.toSchedule("variable", args);
+});
+PluginManager.registerCommand("DdmDraegonisNode", "selfSW_Event", (args) => {
+  DdmApi.Core.Data.toSchedule("selfSwitch", args);
+});
+PluginManager.registerCommand("DdmDraegonisNode", "tint_Event", (args) => {
+  DdmApi.Core.Data.toSchedule("tint", args);
+});
+PluginManager.registerCommand("DdmDraegonisNode", "weather_Event", (args) => {
+  DdmApi.Core.Data.toSchedule("weather", args);
 });
 PluginManager.registerCommand("DdmDraegonisNode", "start", () => {
   DdmApi.NM.start();

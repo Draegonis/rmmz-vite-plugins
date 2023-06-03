@@ -81,3 +81,6 @@ export const NodeEventTypeGuard = ["selfSwitch", "tint", "weather"] as const;
 export type DdmNodeEventTypeGuard = LitteralUnion<
   (typeof NodeEventTypeGuard)[number]
 >;
+
+export const AllNodeType = [...NodeTypeGuard, ...NodeEventTypeGuard] as const;
+export type DdmAllNodeType = LitteralUnion<(typeof AllNodeType)[number]>;

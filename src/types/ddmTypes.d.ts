@@ -154,6 +154,43 @@ export type DdmDayTints = DdmEnforceKeysOfSameType<
   [number, number, number, number]
 >;
 
+export interface DdmEventArgData {
+  id: string;
+  tick: string; // number
+  isTrackable: string; // boolean
+}
+
+export interface DdmSwitchEventArgs extends DdmEventArgData {
+  switchId: string; // number
+  newValue: string; // boolean
+}
+
+export interface DdmVariableEventArgs extends DdmEventArgData {
+  variableId: string; // number
+  newNumber: string; // number
+  newNumberArray: string; // number[]
+  newString: string;
+  newStringArray: string; // string[]
+}
+
+export interface DdmSelfSwitchArgs extends DdmEventArgData {
+  mapID: string; // number
+  eventID: string; // number
+  switchID: string;
+  newValue: string; // boolean
+}
+
+export interface DdmTintEventArgs extends DdmEventArgData {
+  tint: string;
+  frames: string; // number
+}
+
+export interface DdmWeatherEventArgs extends DdmEventArgData {
+  weatherType: string;
+  power: string; // number
+  frames: string; // number
+}
+
 // ===================================================
 //                  INIT API
 
