@@ -61,7 +61,7 @@
  * @arg id
  * @text ID
  * @type string
- * @default "Unique ID"
+ * @default Unique ID
  * @desc The unique ID of the event.
  *
  * @arg tick
@@ -97,7 +97,7 @@
  * @arg id
  * @text ID
  * @type string
- * @default "Unique ID"
+ * @default Unique ID
  * @desc The unique ID of the event.
  *
  * @arg tick
@@ -147,7 +147,7 @@
  * @arg id
  * @text ID
  * @type string
- * @default "Unique ID"
+ * @default Unique ID
  * @desc The unique ID of the event.
  *
  * @arg tick
@@ -180,7 +180,7 @@
  * @arg switchID
  * @text Switch ID
  * @type string
- * @default "A"
+ * @default A
  * @desc The switch ID letter to be changed.
  *
  * @command tint_Event
@@ -190,7 +190,7 @@
  * @arg id
  * @text ID
  * @type string
- * @default "Unique ID"
+ * @default Unique ID
  * @desc The unique ID of the event.
  *
  * @arg tick
@@ -210,16 +210,16 @@
  * @text Event ID
  * @type select
  * @option dawn
- * @value "DAWN"
+ * @value DAWN
  * @option normal
- * @value "NORMAL"
+ * @value NORMAL
  * @option cloudy
- * @value "CLOUDY"
+ * @value CLOUDY
  * @option dusk
- * @value "DUSK"
+ * @value DUSK
  * @option night
- * @value "NIGHT"
- * @default normal
+ * @value NIGHT
+ * @default NORMAL
  * @desc A tint from the tint setting.
  *
  * @arg frames
@@ -236,7 +236,7 @@
  * @arg id
  * @text ID
  * @type string
- * @default "Unique ID"
+ * @default Unique ID
  * @desc The unique ID of the event.
  *
  * @arg tick
@@ -256,14 +256,14 @@
  * @text Weather Type
  * @type select
  * @option none
- * @value "NONE"
+ * @value NONE
  * @option rain
- * @value "RAIN"
+ * @value RAIN
  * @option storm
- * @value "STORM"
+ * @value STORM
  * @option snow
- * @value "SNOW"
- * @default none
+ * @value SNOW
+ * @default NONE
  * @desc The new weather state.
  *
  * @arg power
@@ -279,12 +279,6 @@
  * @default 1
  * @min 1
  * @desc The amount of frames it takes for the weather to change.
- *
- * @arg newValue
- * @text New Value
- * @type boolean
- * @default false
- * @desc The new value of the self switch of map ID / event ID.
  *
  * @command start
  * @text Start Node Tick
